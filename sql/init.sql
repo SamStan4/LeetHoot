@@ -21,20 +21,25 @@ CREATE TABLE IF NOT EXISTS GameTable (
 CREATE TABLE IF NOT EXISTS GameParticipantTable (
     gameID INTEGER NOT NULL,
     playerID INTEGER NOT NULL,
+    playerScore FLOAT NOT NULL DEFAULT 0.0,
     PRIMARY KEY (gameID, playerID),
     FOREIGN KEY (gameID) REFERENCES GameTable(gameID),
     FOREIGN KEY (playerID) REFERENCES PlayerTable(playerID)
 );
 
-CREATE TABLE IF NOT EXISTS QuestionDecks (
+CREATE TABLE IF NOT EXISTS QuestionDeckTable (
     questionDeckID SERIAL NOT NULL,
     questionDeckName VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (questionDeckID)
 );
 
 CREATE TABLE IF NOT EXISTS QuestionTable (
-    questionID SERIAL NOT NULL,
-    questionName VARCHAR(255) NOT NULL UNIQUE,
-    questionDetails jsonb NOT NULL,
-    PRIMARY KEY (questionID)
+    questionID SERIAL NOT NULL,playerUserName
+    PRIMARY KEY (questionID, questionDeckID),
+    FOREIGN KEY (questionID) REFERENCES QuestionTable(questionID),
+    FOREIGN KEY (questionDeckID) REFERENCES QuestionDeckTable(questionDeckID)
 );
+
+CREATE INDEX idx_playerUserName ON PlayerTable(playerUserName);
+
+CREATE INDEX idx_questionDeckName ON QuestionDeckTable(questionDeckName);

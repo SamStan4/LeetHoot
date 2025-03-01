@@ -1,8 +1,8 @@
 export default function PlayGamePage() {
-  console.log("here");
+  const { "game-id": gameId } = useParams();
   return (
     <div>
-      <h1>Play a Game</h1>
+      <h1>Play a Game : {gameId}</h1>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 export default function GameOverPage() {
-  console.log("here");
+  const { "game-id": gameId } = useParams();
   return (
     <div>
-      <h1>Game Over</h1>
+      <h1>Game Over : {gameId}</h1>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { useParams } from 'react-router-dom';
+
 export default function GameOverPage() {
   const { "game-id": gameId } = useParams();
   return (

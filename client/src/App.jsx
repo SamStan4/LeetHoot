@@ -18,7 +18,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage/>} />
-        <Route path="/start-game" element={<StartGamePage/>} />
+        <Route path="/start-game/:game-id" element={<StartGamePage/>} />
         <Route path="/join-game/:game-id" element={<JoinGamePage/>} />
         <Route path="/game-play/:game-id" element={<PlayGamePage/>} />
         <Route path="/game-over/:game-id" element={<GameOverPage/>} />

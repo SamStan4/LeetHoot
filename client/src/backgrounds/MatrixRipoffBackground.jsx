@@ -9,7 +9,7 @@ export default function MatrixRipoffBackground() {
   useEffect(() => {
     const sketch = (p) => {
       const pointList = [];
-      const numPoints = 1000;
+      const numPoints = 300;
       const pointRadius = 15;
       const speed = 1;
       const fontSize = 24;
@@ -25,8 +25,8 @@ export default function MatrixRipoffBackground() {
         };
       };
       p.setup = () => {
-        const canvasWidth = canvasRef.current.clientWidth;
-        const canvasHeight = canvasRef.current.clientHeight;
+        const canvasWidth = window.innerWidth;
+        const canvasHeight = window.innerHeight;
         const canvas = p.createCanvas(canvasWidth, canvasHeight);
         canvas.parent(canvasRef.current);
         for (let i = 0; i < numPoints; ++i) {
@@ -53,8 +53,8 @@ export default function MatrixRipoffBackground() {
         }
       };
       const handleResize = () => {
-        const newCanvasWidth = canvasRef.current.clientWidth;
-        const newCanvasHeight = canvasRef.current.clientHeight;
+        const newCanvasWidth = window.innerWidth;
+        const newCanvasHeight = window.innerHeight;
         const widthUpperBound = newCanvasWidth - pointRadius - 1;
         const heightUpperBound = newCanvasHeight - pointRadius - 1;
         p.resizeCanvas(newCanvasWidth, newCanvasHeight);

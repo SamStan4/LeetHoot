@@ -25,16 +25,20 @@ import MatrixRipoffBackground from "./backgrounds/MatrixRipoffBackground";
 
 export default function App() {
   return (
-    <Router>
-      <MatrixRipoffBackground />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<LandingPage/>} />
-        <Route path="/start-game/:game-id" element={<StartGamePage/>} />
-        <Route path="/join-game/:game-id" element={<JoinGamePage/>} />
-        <Route path="/game-play/:game-id" element={<PlayGamePage/>} />
-        <Route path="/game-over/:game-id" element={<GameOverPage/>} />
-      </Routes>
-    </Router>
+    <div className="flex flex-col h-screen">
+      <Router>
+        <MatrixRipoffBackground />
+        <Navbar />
+        <div className="flex-1 overflow-auto">
+          <Routes>
+            <Route path="/" element={<LandingPage/>} />
+            <Route path="/start-game/:game-id" element={<StartGamePage/>} />
+            <Route path="/join-game/:game-id" element={<JoinGamePage/>} />
+            <Route path="/game-play/:game-id" element={<PlayGamePage/>} />
+            <Route path="/game-over/:game-id" element={<GameOverPage/>} />
+          </Routes>
+        </div>
+      </Router>
+    </div>
   );
 };

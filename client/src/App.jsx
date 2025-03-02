@@ -29,7 +29,7 @@ export default function App() {
       <Router>
         <MatrixRipoffBackground />
         <Navbar />
-        <div className="flex-1 overflow-auto">
+        <div className="mt-[15px] mb-[70px] w-[90vw] flex-1 overflow-auto mx-auto">
           <Routes>
             <Route path="/" element={<LandingPage/>} />
             <Route path="/start-game/:game-id" element={<StartGamePage/>} />

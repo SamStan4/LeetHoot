@@ -1,3 +1,6 @@
+// #d45bca
+// #7f4fa8
+
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
 
@@ -6,12 +9,12 @@ export default function MatrixRipoffBackground() {
   useEffect(() => {
     const sketch = (p) => {
       const pointList = [];
-      const numPoints = 500;
+      const numPoints = 1000;
       const pointRadius = 15;
       const speed = 1;
       const fontSize = 24;
       const textColor = p.color(0, 255, 0);
-      const backgroundColor = p.color(16, 16, 16);
+      const backgroundColor = p.color(24, 27, 28);
       const makePoint = (canvasWidth, canvasHeight) => {
         return {
           x: p.random(pointRadius, canvasWidth - pointRadius),
@@ -72,6 +75,6 @@ export default function MatrixRipoffBackground() {
     };
   }, []);
   return (
-    <div ref={canvasRef} className="w-full h-screen"/>
+    <div ref={canvasRef} className="absolute top-0 left-0 w-full h-screen z-[-1]"/>
   );
 }

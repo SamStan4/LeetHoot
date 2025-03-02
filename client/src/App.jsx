@@ -13,13 +13,23 @@ import JoinGamePage from "./pages/JoinGamePage";
 import PlayGamePage from "./pages/PlayGamePage";
 import GameOverPage from "./pages/GameOverPage";
 
-import CoolHackerBackground from "./backgrounds/MatrixRipoffBackground";
+/**
+ * Navbar
+ */
+import Navbar from "./components/nav-components/Navbar";
+
+/**
+ * Super stupid background
+ */
+import MatrixRipoffBackground from "./backgrounds/MatrixRipoffBackground";
 
 export default function App() {
   return (
     <Router>
+      <MatrixRipoffBackground />
+      <Navbar />
       <Routes>
-        <Route path="/" element={<CoolHackerBackground/>} />
+        <Route path="/" element={<LandingPage/>} />
         <Route path="/start-game/:game-id" element={<StartGamePage/>} />
         <Route path="/join-game/:game-id" element={<JoinGamePage/>} />
         <Route path="/game-play/:game-id" element={<PlayGamePage/>} />

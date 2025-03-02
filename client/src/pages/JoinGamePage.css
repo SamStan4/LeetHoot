@@ -1,0 +1,33 @@
+.user-input{
+    margin: .5em;
+    margin-top: 1em;
+    width: 90%;
+    height: 3em;
+    text-align: center;
+}
+
+body{
+    background-color: slategray;
+}
+
+.enter-button{
+    margin: .5em;
+    height: 3em;
+    width: 90%;
+    margin-bottom: 1em;
+}
+
+h1{
+    margin: 1em;
+}
+
+.game-values{
+    width: 30vw;
+}
+
+.host-button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-style: solid;
+}

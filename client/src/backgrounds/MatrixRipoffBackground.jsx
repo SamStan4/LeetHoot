@@ -9,7 +9,7 @@ export default function MatrixRipoffBackground() {
   useEffect(() => {
     const sketch = (p) => {
       const pointList = [];
-      const numPoints = 300;
+      const numPoints = 500;
       const pointRadius = 15;
       const speed = 1;
       const fontSize = 24;

@@ -8,7 +8,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@common': path.resolve(__dirname, './../common'),
-      '@fonts' : path.resolve(__dirname, './src/fonts'),
+      '@utility' : path.resolve(__dirname, './src/utility'),
+      '@backgrounds' : path.resolve(__dirname, './src/backgrounds'),
+      '@pages' : path.resolve(__dirname, './src/pages'),
+      '@components' : path.resolve(__dirname, './src/components'),
     },
   },
   server: {

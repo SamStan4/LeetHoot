@@ -1,8 +1,9 @@
 const fs = require("fs");
 
-const testRunnerCode = fs.readFileSync("../problem-bank/two-sum/two-sum.py").toString();
+const problemCode = fs.readFileSync("../problem-bank/two-sum/two-sum.py").toString();
 const testCases = fs.readFileSync("../problem-bank/two-sum/test-cases.json").toString();
 const clientCode = fs.readFileSync("two_sum_solution.py").toString();
+const runnderCode = fs.readFileSync("../problem-bank/runner.py").toString();
 
 fetch("http://localhost:7321/api/v1/run",
     {
@@ -11,10 +12,10 @@ fetch("http://localhost:7321/api/v1/run",
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            testRunnerCode: testRunnerCode,
+            problemCode: problemCode,
             clientCode: clientCode,
+            runnerCode: runnderCode,
             testCases: testCases,
-            isPartialSubmission: true,
             stopOnFail: false,
             language: 'python3',
         })

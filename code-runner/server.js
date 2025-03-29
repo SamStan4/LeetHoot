@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs/promises");
 const { exec } = require("child_process");
 const { promisify } = require("util");
+const { performance } = require('perf_hooks');
 
 const PORT = process.env.PORT || 7321;
 
@@ -21,25 +22,6 @@ const cleanup = (requestNumber) => {
     } catch (err) { console.error(err) }
 }
 
-const parseTime = (timeStr) => {
-    const match = timeStr.match(/(\d+)m([\d.]+)s/);
-    if (!match) return null;
-
-    const minutes = parseInt(match[1], 10);
-    const seconds = parseFloat(match[2]);
-
-    return minutes * 60000 + seconds * 1000; // Convert to milliseconds
-}
-
-const sumTimes = (timeStrs) => {
-    const totalMs = timeStrs.reduce((sum, time) => sum + parseTime(time), 0);
-
-    const minutes = Math.floor(totalMs / 60000);
-    const seconds = ((totalMs % 60000) / 1000).toFixed(3);
-
-    return `${minutes}m${seconds}s`;
-}
-
 let requestNumber = 0;
 
 app.post("/api/v1/run", async (req, res) => {
@@ -48,10 +30,9 @@ app.post("/api/v1/run", async (req, res) => {
         const reqNum = requestNumber;
 
         const {
-            problemCode,
+            testCaseIndexes,
             clientCode,
-            runnerCode,
-            testCases: tests,
+            problem,
             stopOnFail,
             language,
         } = req.body;
@@ -59,35 +40,57 @@ app.post("/api/v1/run", async (req, res) => {
         if (language !== 'python3')
             throw new Error(`Unsupported language ${language}`);
 
-        await fs.mkdir(`${reqNum}`, {}, err => console.error(err));
+        const testCases = await JSON.parse(
+            await fs.readFile(`../problem-bank/${problem}/test-cases.json`,
+                { encoding: 'utf-8' })
+        ).test_cases;
+
+        const problemCode = await fs.readFile(
+            `../problem-bank/${problem}/problem.py`,
+            { encoding: 'utf-8' }
+        );
+
+        const runnerCode = await fs.readFile(
+            `../problem-bank/runner.py`,
+            { encoding: 'utf-8' }
+        );
+
+        try {
+            await fs.mkdir(`${reqNum}`, {}, err => console.error(err));
+        } catch { };
         await fs.writeFile(`${reqNum}/problem.py`, problemCode);
         await fs.writeFile(`${reqNum}/client.py`, clientCode);
         await fs.writeFile(`${reqNum}/runner.py`, runnerCode)
-
-        const testCases = JSON.parse(tests).test_cases;
 
         const results = [];
         let pass = true;
         let killed = false;
 
-        for (let i = 0; i < testCases.length; i++) {
+        for (let i = 0; i < testCaseIndexes.length; i++) {
+            const index = testCaseIndexes[i];
+            if (index >= testCases.length) throw new Error('Invalid index');
             try {
-                const testCase = testCases[i];
+
+                const testCase = { test_case: testCases[index] };
+
+                await fs.writeFile(
+                    `${reqNum}/test-case.json`,
+                    JSON.stringify(testCase)
+                );
 
                 args = [
-                    'time',
                     'python3',
                     `${reqNum}/runner.py`,
-                    '--test-case',
-                    `'${JSON.stringify({ test_case: testCase })}'`,
                 ].join(' ');
 
-                const { stdout: _stdout, stderr: _stderr } = await asyncExec(args, { timeout: 5000 });
+                const startTime = performance.now();
+                const { stdout: _stdout, stderr: _stderr } = await asyncExec(args, { timeout: 10000 });
+                const endTime = performance.now();
 
+                const time = Number((endTime - startTime).toFixed(2));
                 const out = await fs.readFile(`${reqNum}/out`, { encoding: 'utf-8' });
-                stderrSplit = _stderr.split("\n")
-                const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
                 const stdout = _stdout ? _stdout.toString().trim() : '';
+                const stderr = _stderr ? _stderr.toString().trim() : '';
 
                 const passedCase = out === 'Pass';
 
@@ -96,7 +99,7 @@ app.post("/api/v1/run", async (req, res) => {
                     killed: false,
                     time: time,
                     stdout: stdout,
-                    stderr: '',
+                    stderr: stderr,
                 }
 
                 results.push(result);
@@ -130,7 +133,7 @@ app.post("/api/v1/run", async (req, res) => {
             }
         }
 
-        const time = pass ? sumTimes(results.map(testCase => testCase.time)) : undefined;
+        const time = pass ? results.reduce((sum, testCase) => sum + Number(testCase.time), 0) : undefined;
 
         cleanup(reqNum);
 

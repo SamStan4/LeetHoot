@@ -20,7 +20,7 @@ app.post("/api/v1/run", async (req, res) => {
         try {
             const { stdout, stderr } = await asyncExec(
                 `time python3 main.py ${isPartialSubmission ? '--partial-submission' : ''} --test-cases '${testCases}'`,
-                { timeout: 10000 }
+                { timeout: 5000 }
             );
 
             const out = stdout.toString().trim().split('\n');
@@ -29,10 +29,22 @@ app.post("/api/v1/run", async (req, res) => {
             stderrSplit = stderr.split("\n")
             const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
 
-            res.json({ executionTime: time });
+            let failIndex = null;
+            for (let i = 0; i < out.length; i++) {
+                const elem = out[i];
+                if (elem.split(' ')[0] === 'Fail') {
+                    failIndex = i;
+                    break;
+                }
+            }
+
+            if (failIndex !== null) return res.json({
+                pass: false, failedTestCaseIndex: failIndex
+            });
+            res.json({ executionTime: time, pass: true });
         } catch (err) {
             console.error(err);
-            return res.json({ executionTime: null, error: err });
+            return res.json({ executionTime: null, error: err, pass: false });
         }
     } catch (err) {
         console.error(err);

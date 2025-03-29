@@ -13,20 +13,39 @@ const asyncExec = promisify(exec);
 
 app.post("/api/v1/run", async (req, res) => {
     try {
-        const { testRunnerCode, clientCode } = req.body;
+        const { testRunnerCode, clientCode, testCases, isPartialSubmission } = req.body;
 
         fs.writeFileSync("main.py", testRunnerCode);
         fs.writeFileSync("client.py", clientCode);
+        try {
+            const { stdout, stderr } = await asyncExec(
+                `time python3 main.py ${isPartialSubmission ? '--partial-submission' : ''} --test-cases '${testCases}'`,
+                { timeout: 5000 }
+            );
 
-        const { stdout, stderr } = await asyncExec("time python3 main.py");
+            const out = stdout.toString().trim().split('\n');
+            console.log(out);
 
-        const out = stdout.toString().trim();
-        console.log(out);
+            stderrSplit = stderr.split("\n")
+            const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
 
-        stderrSplit = stderr.split("\n")
-        const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
+            let failIndex = null;
+            for (let i = 0; i < out.length; i++) {
+                const elem = out[i];
+                if (elem.split(' ')[0] === 'Fail') {
+                    failIndex = i;
+                    break;
+                }
+            }
 
-        res.json({ executionTime: time });
+            if (failIndex !== null) return res.json({
+                pass: false, failedTestCaseIndex: failIndex
+            });
+            res.json({ executionTime: time, pass: true });
+        } catch (err) {
+            console.error(err);
+            return res.json({ executionTime: null, error: err, pass: false });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Something went wrong" });

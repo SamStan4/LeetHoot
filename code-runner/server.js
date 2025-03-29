@@ -13,14 +13,14 @@ const asyncExec = promisify(exec);
 
 app.post("/api/v1/run", async (req, res) => {
     try {
-        const { testRunnerCode, clientCode } = req.body;
+        const { testRunnerCode, clientCode, isPartialSubmission } = req.body;
 
         fs.writeFileSync("main.py", testRunnerCode);
         fs.writeFileSync("client.py", clientCode);
 
         const { stdout, stderr } = await asyncExec("time python3 main.py");
 
-        const out = stdout.toString().trim();
+        const out = stdout.toString().trim().split('\n');
         console.log(out);
 
         stderrSplit = stderr.split("\n")

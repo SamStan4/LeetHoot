@@ -1,5 +1,5 @@
 const express = require("express");
-const fs = require("fs");
+const fs = require("fs/promises");
 const { exec } = require("child_process");
 const { promisify } = require("util");
 
@@ -11,11 +11,13 @@ app.use(express.json());
 
 const asyncExec = promisify(exec);
 
-const cleanup = () => {
+const cleanup = (requestNumber) => {
     try {
-        fs.unlink('client.py', _ => { });
-        fs.unlink('problem.py', _ => { });
-        fs.unlink('out', _ => { });
+        fs.rm(
+            `${requestNumber}`,
+            { recursive: true, force: true },
+            err => console.error(err)
+        );
     } catch (err) { console.error(err) }
 }
 
@@ -38,11 +40,17 @@ const sumTimes = (timeStrs) => {
     return `${minutes}m${seconds}s`;
 }
 
+let requestNumber = 0;
+
 app.post("/api/v1/run", async (req, res) => {
     try {
+        requestNumber = (requestNumber + 1) % 100000;
+        const reqNum = requestNumber;
+
         const {
-            testRunnerCode,
+            problemCode,
             clientCode,
+            runnerCode,
             testCases: tests,
             stopOnFail,
             language,
@@ -51,21 +59,16 @@ app.post("/api/v1/run", async (req, res) => {
         if (language !== 'python3')
             throw new Error(`Unsupported language ${language}`);
 
-        fs.writeFileSync("problem.py", testRunnerCode);
-        fs.writeFileSync("client.py", clientCode);
+        await fs.mkdir(`${reqNum}`, {}, err => console.error(err));
+        await fs.writeFile(`${reqNum}/problem.py`, problemCode);
+        await fs.writeFile(`${reqNum}/client.py`, clientCode);
+        await fs.writeFile(`${reqNum}/runner.py`, runnerCode)
 
         const testCases = JSON.parse(tests).test_cases;
 
         const results = [];
         let pass = true;
         let killed = false;
-
-        let runnerPath = '';
-        switch (language) {
-            case 'python3':
-                runnerPath = 'main.py';
-                break;
-        }
 
         for (let i = 0; i < testCases.length; i++) {
             try {
@@ -74,14 +77,14 @@ app.post("/api/v1/run", async (req, res) => {
                 args = [
                     'time',
                     'python3',
-                    runnerPath,
+                    `${reqNum}/runner.py`,
                     '--test-case',
                     `'${JSON.stringify({ test_case: testCase })}'`,
                 ].join(' ');
 
                 const { stdout: _stdout, stderr: _stderr } = await asyncExec(args, { timeout: 5000 });
 
-                const out = fs.readFileSync("out", { encoding: 'utf-8' });
+                const out = await fs.readFile(`${reqNum}/out`, { encoding: 'utf-8' });
                 stderrSplit = _stderr.split("\n")
                 const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
                 const stdout = _stdout ? _stdout.toString().trim() : '';
@@ -129,7 +132,7 @@ app.post("/api/v1/run", async (req, res) => {
 
         const time = pass ? sumTimes(results.map(testCase => testCase.time)) : undefined;
 
-        cleanup();
+        cleanup(reqNum);
 
         res.json({
             pass: pass,

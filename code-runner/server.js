@@ -13,20 +13,27 @@ const asyncExec = promisify(exec);
 
 app.post("/api/v1/run", async (req, res) => {
     try {
-        const { testRunnerCode, clientCode, isPartialSubmission } = req.body;
+        const { testRunnerCode, clientCode, testCases, isPartialSubmission } = req.body;
 
         fs.writeFileSync("main.py", testRunnerCode);
         fs.writeFileSync("client.py", clientCode);
+        try {
+            const { stdout, stderr } = await asyncExec(
+                `time python3 main.py ${isPartialSubmission ? '--partial-submission' : ''} --test-cases '${testCases}'`,
+                { timeout: 10000 }
+            );
 
-        const { stdout, stderr } = await asyncExec("time python3 main.py");
+            const out = stdout.toString().trim().split('\n');
+            console.log(out);
 
-        const out = stdout.toString().trim().split('\n');
-        console.log(out);
+            stderrSplit = stderr.split("\n")
+            const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
 
-        stderrSplit = stderr.split("\n")
-        const time = stderrSplit[stderrSplit.length - 2].split(/\t/)[1];
-
-        res.json({ executionTime: time });
+            res.json({ executionTime: time });
+        } catch (err) {
+            console.error(err);
+            return res.json({ executionTime: null, error: err });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Something went wrong" });

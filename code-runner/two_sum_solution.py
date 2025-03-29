@@ -1,2 +1,4 @@
 def two_sum(nums, target):
-   return nums
+    while True:
+        pass
+    return []

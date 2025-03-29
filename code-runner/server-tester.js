@@ -1,6 +1,7 @@
 const fs = require("fs");
 
-const testRunnerCode = fs.readFileSync("problems/two_sum.py").toString();
+const testRunnerCode = fs.readFileSync("../problems/two-sum/two-sum.py").toString();
+const testCases = fs.readFileSync("../problems/two-sum/test-cases.json").toString();
 const clientCode = fs.readFileSync("two_sum_solution.py").toString();
 
 fetch("http://localhost:7321/api/v1/run",
@@ -12,6 +13,7 @@ fetch("http://localhost:7321/api/v1/run",
         body: JSON.stringify({
             testRunnerCode: testRunnerCode,
             clientCode: clientCode,
+            testCases: testCases,
             isPartialSubmission: true,
         })
     }

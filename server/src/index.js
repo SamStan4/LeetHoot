@@ -6,6 +6,7 @@
 
 const express = require("express"); // library for making REST API in node.js
 const dotenv = require("dotenv");   // for loading .env files (where we put secret information)
+const cors = require("cors");
 
 const { getAllQuestions } = require("./db/databaseUtils");
 
@@ -13,6 +14,7 @@ dotenv.config();
 
 const serverApp = express();
 const listenPort = process.env.PORT || 8080;
+serverApp.use(cors());
 
 serverApp.use(express.json());
 

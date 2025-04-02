@@ -4,6 +4,8 @@ const { exec } = require("child_process");
 const { promisify } = require("util");
 const { performance } = require('perf_hooks');
 
+require('dotenv').config();
+
 const PORT = process.env.PORT || 7321;
 
 const app = express();

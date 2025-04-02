@@ -12,6 +12,8 @@ app.use(express.json());
 
 const asyncExec = promisify(exec);
 
+const problemBankPath = 'problem-bank';
+
 const cleanup = (requestNumber) => {
     try {
         fs.rm(
@@ -24,15 +26,16 @@ const cleanup = (requestNumber) => {
 
 let requestNumber = 0;
 
-app.post("/api/v1/run", async (req, res) => {
+app.post("/api/v1/problems/:id/run", async (req, res) => {
     try {
         requestNumber = (requestNumber + 1) % 100000;
         const reqNum = requestNumber;
 
+        const problem = req.params.id;
+
         const {
             testCaseIndexes,
             clientCode,
-            problem,
             stopOnFail,
             language,
         } = req.body;
@@ -41,17 +44,17 @@ app.post("/api/v1/run", async (req, res) => {
             throw new Error(`Unsupported language ${language}`);
 
         const testCases = await JSON.parse(
-            await fs.readFile(`../problem-bank/${problem}/test-cases.json`,
+            await fs.readFile(`${problemBankPath}/${problem}/test-cases.json`,
                 { encoding: 'utf-8' })
         ).test_cases;
 
         const problemCode = await fs.readFile(
-            `../problem-bank/${problem}/problem.py`,
+            `${problemBankPath}/${problem}/problem.py`,
             { encoding: 'utf-8' }
         );
 
         const runnerCode = await fs.readFile(
-            `../problem-bank/runner.py`,
+            `${problemBankPath}/runner.py`,
             { encoding: 'utf-8' }
         );
 
@@ -100,6 +103,7 @@ app.post("/api/v1/run", async (req, res) => {
                     time: time,
                     stdout: stdout,
                     stderr: stderr,
+                    testCaseIndex: index,
                 }
 
                 results.push(result);
@@ -116,6 +120,7 @@ app.post("/api/v1/run", async (req, res) => {
                     killed: err.killed || err.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER',
                     stdout: err.stdout,
                     stderr: err.stderr,
+                    testCaseIndex: index,
                 }
 
                 pass = false;
@@ -146,6 +151,74 @@ app.post("/api/v1/run", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Something went wrong" });
+    }
+});
+
+app.get('/api/v1/problems', async (req, res) => {
+    try {
+        console.log('GET /api/v1/problems');
+
+        const ids = (await fs.readdir(problemBankPath))
+            .filter(e => !/\.py$/.test(e) && !/^\./.test(e))
+
+        const problems = await Promise.all(ids.map(async e => {
+            const metadata = JSON.parse((await fs.readFile(
+                `${problemBankPath}/${e}/metadata.json`,
+            )));
+
+            return {
+                id: e,
+                metadata: metadata,
+            }
+        }));
+
+        res.json({ problems: problems });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+});
+
+const testCaseCount = new Map();
+
+app.get('/api/v1/problems/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        console.log(`GET /api/v1/problems/${id}`);
+
+        const description = (await fs.readFile(
+            `${problemBankPath}/${id}/description.md`,
+            { encoding: 'utf-8' }
+        ));
+
+        const solutionTemplate = (await fs.readFile(
+            `${problemBankPath}/${id}/solution-template.py`,
+            { encoding: 'utf-8' }
+        ));
+
+        const metadata = JSON.parse((await fs.readFile(
+            `${problemBankPath}/${id}/metadata.json`,
+        )));
+
+        if (!testCaseCount.has(id))
+            testCaseCount.set(id,
+                JSON.parse((await fs.readFile(
+                    `${problemBankPath}/${id}/test-cases.json`,
+                ))).test_cases.length
+            );
+
+        const problem = {
+            id: id,
+            description: description,
+            solutionTemplate: solutionTemplate,
+            testCaseCount: testCaseCount.get(id),
+            metadata: metadata
+        }
+
+        res.json(problem);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Something went wrong' });
     }
 });
 

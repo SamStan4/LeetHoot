@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const clientCode = fs.readFileSync("two_sum_solution.py").toString();
+const clientCode = fs.readFileSync("invert_bst_solution.py").toString();
 
 fetch("http://localhost:7321/api/v1/run",
     {
@@ -9,11 +9,11 @@ fetch("http://localhost:7321/api/v1/run",
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            problem: 'two-sum',
+            problem: 'invert_bst',
             clientCode: clientCode,
             stopOnFail: false,
             language: 'python3',
-            testCaseIndexes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+            testCaseIndexes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         })
     }
 ).then(response => {

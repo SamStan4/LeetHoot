@@ -24,6 +24,33 @@ const cleanup = (requestNumber) => {
     } catch (err) { console.error(err) }
 }
 
+const parseTestCaseIndexes = (testCaseIndexes, testCaseCount) => {
+    const indexes = testCaseIndexes.trim();
+
+    if (indexes === '') throw new Error('indexes cannot be empty');
+
+    const ret = [];
+
+    if (indexes === 'all') {
+        for (let i = 0; i < testCaseCount; i++) ret.push(i);
+        return ret;
+    }
+
+    indexes.split(' ').forEach(e => {
+        const s = e.split('-');
+
+        if (s.length === 1) {
+            ret.push(Number(s[0]));
+        } else {
+            const left = Number(s[0]);
+            const right = Number(s[1]);
+            for (let i = left; i <= right; i++) ret.push(i);
+        }
+    });
+
+    return ret;
+}
+
 let requestNumber = 0;
 
 app.post("/api/v1/problems/:id/run", async (req, res) => {
@@ -34,7 +61,7 @@ app.post("/api/v1/problems/:id/run", async (req, res) => {
         const problem = req.params.id;
 
         const {
-            testCaseIndexes,
+            testCaseIndexes: _testCaseIndexes,
             clientCode,
             stopOnFail,
             language,
@@ -47,6 +74,8 @@ app.post("/api/v1/problems/:id/run", async (req, res) => {
             await fs.readFile(`${problemBankPath}/${problem}/test-cases.json`,
                 { encoding: 'utf-8' })
         ).test_cases;
+
+        const testCaseIndexes = parseTestCaseIndexes(_testCaseIndexes, testCases.length);
 
         const problemCode = await fs.readFile(
             `${problemBankPath}/${problem}/problem.py`,
@@ -149,6 +178,7 @@ app.post("/api/v1/problems/:id/run", async (req, res) => {
             results: results,
         });
     } catch (err) {
+        cleanup(requestNumber);
         console.error(err);
         res.status(500).json({ message: "Something went wrong" });
     }

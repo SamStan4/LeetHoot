@@ -1,7 +1,7 @@
 def two_sum(nums, target):
     m = {}
     arr = []
-    for i, n in enumerate(nums)
+    for i, n in enumerate(nums):
         if n in m:
             return [i, m[n]]
         m[target - n] = i

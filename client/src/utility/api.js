@@ -1,3 +1,8 @@
+require('dotenv').config();
+
+const codeRunnerPort = process.env.PROBLEM_API_PORT;
+const serverPort = process.env.SERVER_PORT;
+
 // TODO: implement this
 export async function checkGameExistance(gameId) {
     return gameId === "1234";

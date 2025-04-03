@@ -9,6 +9,33 @@ const dotenv = require('dotenv');   // for loading .env files (where we put secr
 
 dotenv.config();
 
+function CalculateUserScore(userResults){
+
+    const maxRuntime = 5000;
+    let passedCasesTime = 0;
+    let failedCasesTime = 0;
+
+    const numTestCases = userResults.results.length;
+    let passedTests = 0;
+
+    //Separate the total runtime into time spent on failed cases and passed cases
+    for (let i = 0; i < numTestCases; ++i){
+        if(userResults.results[i].pass === true){
+            ++passedTests;
+            passedCasesTime += userResults.results[i].time;
+        }
+        else{
+            failedCasesTime += userResults.results[i].time;
+        }
+    }
+
+    //Calculates the score of the user out of 1000
+    //500 points come from time to run test cases and 500 comes from the percentage of cases that are passed
+    questionScore = (((maxRuntime / (res.time + failedCasesTime)) 
+                    * ((passedCasesTime / userResults.time) * 100)) % 500) + (500 * (passedTests / numTestCases));
+    
+}
+
 const serverApp = express();
 const listenPort = process.env.PORT || 8080;
 

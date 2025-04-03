@@ -12,7 +12,7 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
 async function getAllQuestions() {
   return new Promise((resolve, reject) => {
     const sqlString = "SELECT * FROM QuestionTable ORDER BY QuestionTable.questionName;";
-    db.all((sqlString), (err, rows) => {
+    db.all((sqlString), function (err, rows) {
       if (err) {
         reject(err);
       } else {
@@ -20,8 +20,23 @@ async function getAllQuestions() {
       }
     });
   });
-};
+}
+
+async function registerNewGame(newDeck) {
+  const newDeckJson = JSON.stringify({ "questions": newDeck });
+  const sqlString = "INSERT INTO GameTable (GameQuestions) VALUES (?)";
+  return new Promise((resolve, reject) => {
+    db.run(sqlString, [newDeckJson], function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+}
 
 module.exports = {
-  getAllQuestions
+  getAllQuestions,
+  registerNewGame
 };

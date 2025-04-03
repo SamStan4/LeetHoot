@@ -1,4 +1,4 @@
-import { getAllQuestions } from "@utility/api";
+import { getAllQuestions, registerGame } from "@utility/api";
 import ProblemSelectPreview from "@components/ProblemSelectPreview";
 import { useState, useEffect } from "react";
 
@@ -32,8 +32,9 @@ export default function StartGamePage() {
     });
   };
 
-  const handleStartGame = () => {
-    console.log("Game started with:", selectedQuestions)
+  const handleStartGame = async () => {
+    const newGameID = await registerGame(selectedQuestions);
+    console.log(`Here is the new gameID: ${newGameID}`);
   }
 
   return (

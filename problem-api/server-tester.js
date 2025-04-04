@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const clientCode = fs.readFileSync("two_sum_solution.py").toString();
+const clientCode = fs.readFileSync("valid_parenthesis_solution.py").toString();
 
 fetch("http://localhost:7321/api/v1/problems/two-sum/run",
     {

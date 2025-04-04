@@ -24,7 +24,7 @@ async function getAllQuestions() {
 
 async function registerNewGame(newDeck) {
   const newDeckJson = JSON.stringify({ "questions": newDeck });
-  const sqlString = "INSERT INTO GameTable (GameQuestions) VALUES (?)";
+  const sqlString = "INSERT INTO GameTable (GameQuestions) VALUES (?);";
   return new Promise((resolve, reject) => {
     db.run(sqlString, [newDeckJson], function(err) {
       if (err) {
@@ -36,7 +36,35 @@ async function registerNewGame(newDeck) {
   });
 }
 
+async function checkGameExistance(gameID) {
+  const sqlString = "SELECT COUNT(*) AS count FROM GameTable WHERE GameTable.gameID = ?";
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [parseInt(gameID, 10)], function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row.count > 0);
+      }
+    });
+  });
+}
+
+async function checkNameAvailability(gameID, name) {
+  const sqlString = "SELECT COUNT(*) AS count FROM PlayerTable WHERE PlayerTable.gameID = ? AND PlayerTable.playerName = ?;";
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID, name], function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row.count === 0);
+      }
+    });
+  });
+}
+
 module.exports = {
   getAllQuestions,
-  registerNewGame
+  registerNewGame,
+  checkGameExistance,
+  checkNameAvailability
 };

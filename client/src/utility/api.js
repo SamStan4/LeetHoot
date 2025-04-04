@@ -4,24 +4,30 @@ const problemApiIP = import.meta.env.VITE_PROBLEM_API_IP;
 const serverPort = import.meta.env.VITE_SERVER_PORT;
 const problemApiPort = import.meta.env.VITE_PROBLEM_API_PORT;
 
-// TODO: implement this
 export async function checkGameExistance(gameId) {
-  return gameId === "1234";
+  const url = `http://${serverIP}:${serverPort}/api/game/exists`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ gameID: gameId })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 
 // TODO: implement this
 export async function checkNameAvailability(gameId, name) {
   return name === "sam";
-}
-
-// TODO: implement this
-export async function getDecks() {
-  return [];
-}
-
-// TODO: implement this
-export async function createNewGame(deck) {
-  return "1234";
 }
 
 export async function getAllQuestions() {
@@ -38,13 +44,14 @@ export async function getAllQuestions() {
     }
     const data = await response.json();
     return data;
-  } catch {
+  } catch (err) {
+    console.error(err);
     return [];
   }
 }
 
 export async function registerGame(gameQuestions) {
-  const url = `http://${serverIP}:${serverPort}/api/register-game`;
+  const url = `http://${serverIP}:${serverPort}/api/game/register`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -54,7 +61,7 @@ export async function registerGame(gameQuestions) {
       body: JSON.stringify(gameQuestions)
     });
     if (!response.ok) {
-      throw new Error;
+      throw new Error();
     }
     const data = await response.json();
     return data;

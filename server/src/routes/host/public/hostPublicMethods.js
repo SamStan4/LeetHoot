@@ -1,9 +1,17 @@
 const sqlite3 = require("sqlite3").verbose();
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
+
+//----------------------------------------------------------------------------------------------------------------------------------------------//
 
 const problemApiIP = process.env.PROBLEM_API_IP;
 const problemApiPort = process.env.PROBLEM_API_PORT;
+const jwtSecret = process.env.JWT_SECRET;
 
+if (!jwtSecret || !problemApiIP || !problemApiPort) {
+  console.error("unable to load env vars, exiting");
+  process.exit(1);
+}
 
 const db = new sqlite3.Database("./data/database.db", (err) => {
   if (err) {
@@ -13,6 +21,19 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
     console.log("host public method module connected to database");
   }
 });
+
+//----------------------------------------------------------------------------------------------------------------------------------------------//
+
+async function generateHostAuthToken(gameID, options = {}) {
+  const hostAuthPayload = {
+    role: "host",
+    gameID: gameID
+  };
+  return jwt.sign(hostAuthPayload, jwtSecret, {
+    expiresIn: "2h",
+    ...options
+  });
+}
 
 async function fetchAllQuestions() {
   const url = `http://${problemApiIP}:${problemApiPort}/api/v1/problems`;
@@ -49,6 +70,7 @@ async function registerNewGame(newDeck) {
 }
 
 module.exports = {
+  generateHostAuthToken,
   fetchAllQuestions,
   registerNewGame
 };

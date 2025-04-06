@@ -2,7 +2,9 @@ const express = require('express');
 const hostPublicRouter = express.Router();
 
 const {
-  fetchAllQuestions
+  fetchAllQuestions,
+  registerNewGame,
+  generateHostAuthToken
 } = require ("./hostPublicMethods")
 
 hostPublicRouter.get("/get-all-problems", async function (_, res) {
@@ -10,6 +12,23 @@ hostPublicRouter.get("/get-all-problems", async function (_, res) {
     const data = await fetchAllQuestions();
     res.status(200).json({
       problems: data
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+hostPublicRouter.post("/register-new-game", async function(req, res) {
+  try {
+    const { questionList } = req.body;
+    const newGameID = await registerNewGame(questionList);
+    const newJwtAuth = await generateHostAuthToken(newGameID);
+    res.status(201).json({
+      gameID: newGameID,
+      hostToken: newJwtAuth
     });
   } catch (err) {
     console.error(err);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkNameAvailability } from "@utility/api.js";
+import { registerPlayer } from "@utility/api.js";
 
 export default function EnterPlayerNamePage() {
   const { "game-id": gameId } = useParams();
@@ -12,7 +12,7 @@ export default function EnterPlayerNamePage() {
     if (!trimmedName) {
       setErrorMessage("Invalid name entry");
       return;
-    } else if (!await checkNameAvailability(gameId, trimmedName)) {
+    } else if (!await registerPlayer(gameId, trimmedName)) {
       setErrorMessage("Name already taken");
       return;
     }

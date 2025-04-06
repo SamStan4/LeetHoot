@@ -4,6 +4,8 @@ const problemApiIP = import.meta.env.VITE_PROBLEM_API_IP;
 const serverPort = import.meta.env.VITE_SERVER_PORT;
 const problemApiPort = import.meta.env.VITE_PROBLEM_API_PORT;
 
+// PUBLIC
+
 export async function checkGameExistance(gameId) {
   const url = `http://${serverIP}:${serverPort}/player/public/check-game-existance`;
   try {
@@ -88,10 +90,42 @@ export async function registerGame(gameProblems) {
       throw new Error();
     }
     const data = await response.json();
-    // TODO: register new JWT
-    return data;
+    const { gameID, hostToken } = data;
+    sessionStorage.setItem("hostToken", hostToken);
+    return gameID;
   } catch (err) {
     console.error(err);
     return "";
   }
 }
+
+export async function registerPlayer(gameID, playerName) {
+  const url = `http://${serverIP}:${serverPort}/player/public/register-player`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        gameID: gameID,
+        playerName: playerName
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { status, playerToken } = data;
+    if (!status) {
+      return false;
+    }
+    sessionStorage.setItem("playerToken", playerToken);
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+// SECURE

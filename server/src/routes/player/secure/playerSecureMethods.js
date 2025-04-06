@@ -26,7 +26,7 @@ async function verifyPlayerAuthToken(jwtToken, gameID, playerName) {
   try {
     const decoded = jwt.verify(jwtToken, jwtSecret);
     if (decoded.playerName !== playerName || decoded.gameID !== gameID || decoded.role !== "player") {
-      throw new Error("Token does not match player or game");
+      throw new Error("Player token does not match");
     }
     return {
       valid: true,

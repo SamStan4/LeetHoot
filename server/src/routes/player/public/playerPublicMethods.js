@@ -34,8 +34,22 @@ async function generatePlayerAuthToken(gameID, playerName, options = {}) {
   });
 }
 
+async function checkGameExistance(gameID) {
+  const sqlString = "SELECT COUNT(*) AS count FROM GameTable WHERE GameTable.gameID = ?";
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [parseInt(gameID, 10)], function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row.count > 0);
+      }
+    });
+  });
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
-  generatePlayerAuthToken
+  generatePlayerAuthToken,
+  checkGameExistance
 };

@@ -47,9 +47,23 @@ async function checkGameExistance(gameID) {
   });
 }
 
+async function checkNameAvailability(gameID, name) {
+  const sqlString = "SELECT COUNT(*) AS count FROM PlayerTable WHERE PlayerTable.gameID = ? AND PlayerTable.playerName = ?;";
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID, name], function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row.count === 0);
+      }
+    });
+  });
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
   generatePlayerAuthToken,
-  checkGameExistance
+  checkGameExistance,
+  checkNameAvailability
 };

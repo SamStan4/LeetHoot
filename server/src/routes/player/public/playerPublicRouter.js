@@ -3,10 +3,11 @@ const playerPublicRouter = express.Router();
 
 const {
   generatePlayerAuthToken,
-  checkGameExistance
+  checkGameExistance,
+  checkNameAvailability
 } = require ("./playerPublicMethods")
 
-playerPublicRouter.post("/check-game-existance", async function (req, res) {
+playerPublicRouter.post("/check-game-existance", async function(req, res) {
   try {
     const { gameID } = req.body;
     const status = await checkGameExistance(gameID);
@@ -17,6 +18,21 @@ playerPublicRouter.post("/check-game-existance", async function (req, res) {
     res.status(500).json({
       error: err.message
     });
+  }
+});
+
+// TODO: test this mofo more on postman
+playerPublicRouter.post("/check-name-availability", async function(req, res) {
+  try {
+    const { gameID, playerName } = req.body;
+    const status = await checkNameAvailability(gameID, playerName);
+    res.json({
+      status: status
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    })
   }
 });
 

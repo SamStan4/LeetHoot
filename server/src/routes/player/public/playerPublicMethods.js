@@ -60,10 +60,28 @@ async function checkNameAvailability(gameID, name) {
   });
 }
 
+async function registerPlayerForGame(gameID, name) {
+  const sqlString = "INSERT INTO PlayerTable (gameID, playerName) VALUES (?, ?)";
+  return new Promise((resolve, reject) => {
+    db.run(sqlString, [gameID, name], (err) => {
+      if (err) {
+        reject({
+          status: false
+        });
+      } else {
+        resolve({
+          status: true
+        });
+      }
+    });
+  });
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
   generatePlayerAuthToken,
   checkGameExistance,
-  checkNameAvailability
+  checkNameAvailability,
+  registerPlayerForGame
 };

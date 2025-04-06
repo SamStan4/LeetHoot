@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS PlayerTable (
   gameID INTEGER NOT NULL,
   playerName TEXT NOT NULL,
   hasAnswered BOOLEAN INTEGER DEFAULT 0 CHECK (hasAnswered IN (0, 1)),
+  score INTEGER NOT NULL DEFAULT 0 CHECK (score >= 0),
   PRIMARY KEY (gameID, playerName),
   FOREIGN KEY (gameID) REFERENCES GameTable(gameID) ON DELETE CASCADE
 );

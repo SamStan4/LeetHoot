@@ -5,7 +5,7 @@ const serverPort = import.meta.env.VITE_SERVER_PORT;
 const problemApiPort = import.meta.env.VITE_PROBLEM_API_PORT;
 
 export async function checkGameExistance(gameId) {
-  const url = `http://${serverIP}:${serverPort}/api/game/exists`;
+  const url = `http://${serverIP}:${serverPort}/player/public/check-game-existance`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -18,7 +18,8 @@ export async function checkGameExistance(gameId) {
       throw new Error();
     }
     const data = await response.json();
-    return data;
+    const { status } = data;
+    return status;
   } catch (err) {
     console.error(err);
     return false;
@@ -27,7 +28,28 @@ export async function checkGameExistance(gameId) {
 
 // TODO: implement this
 export async function checkNameAvailability(gameId, name) {
-  return name === "sam";
+  const url = `http://${serverIP}:${serverPort}/player/public/check-name-availability`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        gameID: gameId,
+        playerName: name
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { status } = data;
+    return status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 
 export async function getAllProblems() {
@@ -50,20 +72,23 @@ export async function getAllProblems() {
   }
 }
 
-export async function registerGame(gameQuestions) {
-  const url = `http://${serverIP}:${serverPort}/api/game/register`;
+export async function registerGame(gameProblems) {
+  const url = `http://${serverIP}:${serverPort}/host/public/register-new-game`;
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(gameQuestions)
+      body: JSON.stringify({
+        questionList: gameProblems
+      })
     });
     if (!response.ok) {
       throw new Error();
     }
     const data = await response.json();
+    // TODO: register new JWT
     return data;
   } catch (err) {
     console.error(err);

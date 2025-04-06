@@ -21,6 +21,7 @@ hostPublicRouter.get("/get-all-problems", async function (_, res) {
   }
 });
 
+// TODO: test this endpoint wher there are more problems in the db
 hostPublicRouter.post("/register-new-game", async function(req, res) {
   try {
     const { questionList } = req.body;

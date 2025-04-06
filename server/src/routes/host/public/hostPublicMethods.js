@@ -34,6 +34,21 @@ async function fetchAllQuestions() {
   });
 }
 
+async function registerNewGame(newDeck) {
+  const newDeckJson = JSON.stringify({ "questions": newDeck });
+  const sqlString = "INSERT INTO GameTable (GameQuestions) VALUES (?);";
+  return new Promise((resolve, reject) => {
+    db.run(sqlString, [newDeckJson], function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+}
+
 module.exports = {
-  fetchAllQuestions
+  fetchAllQuestions,
+  registerNewGame
 };

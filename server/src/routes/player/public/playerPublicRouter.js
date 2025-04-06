@@ -1,7 +1,9 @@
 const express = require('express');
 const playerPublicRouter = express.Router();
 
-const {} = require ("./playerPublicMethods")
+const {
+  generatePlayerAuthToken
+} = require ("./playerPublicMethods")
 
 /**
  * Catch all endpoint for bad requests

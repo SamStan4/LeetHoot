@@ -30,8 +30,8 @@ export async function checkNameAvailability(gameId, name) {
   return name === "sam";
 }
 
-export async function getAllQuestions() {
-  const url = `http://${serverIP}:${serverPort}/api/questions/all`;
+export async function getAllProblems() {
+  const url = `http://${serverIP}:${serverPort}/host/public/get-all-problems`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -43,7 +43,7 @@ export async function getAllQuestions() {
       throw new Error();
     }
     const data = await response.json();
-    return data;
+    return data.problems;
   } catch (err) {
     console.error(err);
     return [];

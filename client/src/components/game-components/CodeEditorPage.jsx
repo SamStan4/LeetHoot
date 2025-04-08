@@ -3,15 +3,18 @@ import ProblemDetailsComponent from "@components/game-components/ProblemDetailsC
 import { useEffect, useState } from "react";
 import { getProblemDetails, getCurrentProblem } from "@utility/api";
 
-export default function CodeEditorPage() {
+export default function CodeEditorPage({ gameID, playerName }) {
   const [codeText, setCodeText] = useState("");
   const [mdContent, setMdContent] = useState("");
   const [terminalContent, setTerminalContent] = useState("");
   const [problemName, setProblemName] = useState("");
 
   useEffect(() => {
-    // TODO: change this to getCurrentProblem API
-    setProblemName("two-sum");
+    const getProblemName = async () => {
+      const name = await getCurrentProblem(gameID, playerName);
+      setProblemName(name);
+    };
+    getProblemName();
   }, []);
 
   useEffect(() => {
@@ -22,7 +25,7 @@ export default function CodeEditorPage() {
       }
       setCodeText(problemDetails.solutionTemplate);
       setMdContent(problemDetails.description);
-    }
+    };
     setDetails();
   }, [problemName]);
 

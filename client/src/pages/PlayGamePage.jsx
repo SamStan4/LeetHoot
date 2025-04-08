@@ -7,7 +7,7 @@ export default function PlayGamePage() {
   return (
     <div className="flex justify-center items-center w-full h-full">
       {/* <WaitingForHost/> */}
-      <CodeEditor/>
+      <CodeEditor gameID={gameId} playerName={playerName} />
     </div>
   );
 }

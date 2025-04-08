@@ -1,16 +1,10 @@
-/**
- * This file holds all of the API endpoints
- * 
- * If you are working on this, look up how a REST API works first :)
- */
-
-const express = require("express"); // library for making REST API in node.js
-const dotenv = require("dotenv");   // for loading .env files (where we put secret information)
+const express = require("express");
+const dotenv = require("dotenv");
 const cors = require("cors");
 
-const { getAllQuestions } = require("./db/databaseUtils");
-
-dotenv.config();
+const playerRouter = require("./routes/player/playerRouter");
+const hostRouter = require("./routes/host/hostRouter");
+const adminRouter = require("./routes/admin/adminRouter");
 
 const serverApp = express();
 const listenPort = process.env.PORT || 8080;
@@ -18,16 +12,9 @@ serverApp.use(cors());
 
 serverApp.use(express.json());
 
-serverApp.get("/api/questions/all", async (_, res) => {
-  try {
-    const questions = await getAllQuestions();
-    res.json(questions);
-  } catch (err) {
-    res.status(500).json({
-      error: err.message
-    });
-  }
-});
+serverApp.use("/player", playerRouter);
+serverApp.use("/host", hostRouter);
+serverApp.use("/admin", adminRouter);
 
 serverApp.listen(listenPort, () => {
     console.log(`Server started, listening on port ${listenPort}`);

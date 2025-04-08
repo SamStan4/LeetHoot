@@ -1,8 +1,6 @@
 // Well didnt know vite doesnt use "process" but "import.meta"... 1 hour of debugging later
 const serverIP = import.meta.env.VITE_SERVER_IP
-const problemApiIP = import.meta.env.VITE_PROBLEM_API_IP;
 const serverPort = import.meta.env.VITE_SERVER_PORT;
-const problemApiPort = import.meta.env.VITE_PROBLEM_API_PORT;
 
 // PUBLIC
 

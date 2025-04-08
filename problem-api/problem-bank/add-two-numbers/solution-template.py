@@ -3,8 +3,9 @@
 #     def __init__(self, val=0, next=None):
 #         self.val = val
 #         self.next = next
-def reverse_linked_list(head):
+def add_two_numbers(l1, l2):
     """
-    :type node: List[int]
+    :type l1: List[int]
+    :type l2: List[int]
     :rtype: List[int]
     """

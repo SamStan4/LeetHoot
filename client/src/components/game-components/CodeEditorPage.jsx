@@ -1,29 +1,38 @@
 import CodeEditorComponent from "@components/game-components/CodeEditorComponent";
 import ProblemDetailsComponent from "@components/game-components/ProblemDetailsComponent";
 import { useEffect, useState } from "react";
+import { getProblemDetails, getCurrentProblem } from "@utility/api";
 
 export default function CodeEditorPage() {
   const [codeText, setCodeText] = useState("");
   const [mdContent, setMdContent] = useState("");
-  const [terminalContent, setTerminalContent] = useState("PASSED");
+  const [terminalContent, setTerminalContent] = useState("");
   const [problemName, setProblemName] = useState("");
 
   useEffect(() => {
-    // Setting the actual problem name
+    // TODO: change this to getCurrentProblem API
     setProblemName("two-sum");
-    
-    // set the code text
-    setCodeText("def two_sum(nums: list[int], target: int):\n\t");
-
-    // Setting the mark down content
-    setMdContent("# Two Sum problem thing\n\n```js\nconsole.log(\"solve me\")\n```");
   }, []);
 
+  useEffect(() => {
+    const setDetails = async () => {
+      const problemDetails = await getProblemDetails(problemName);
+      if (!problemDetails) {
+        return;
+      }
+      setCodeText(problemDetails.solutionTemplate);
+      setMdContent(problemDetails.description);
+    }
+    setDetails();
+  }, [problemName]);
+
   const handleSubmitCode = async () => {
+    // TODO: add a submit route in the backend
     console.log("submitting code");
   };
 
   const handleRunCode = async () => {
+    // TODO: add a run route in the backend
     console.log("running code");
     setTerminalContent("passed!");
   }

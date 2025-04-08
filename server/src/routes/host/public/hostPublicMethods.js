@@ -69,8 +69,21 @@ async function registerNewGame(newDeck) {
   });
 }
 
+async function getProblemDetails(problemName) {
+  const url = `http://${problemApiIP}:${problemApiPort}/api/v1/problems/${problemName}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+  const data = await response.json();
+  return data;
+}
+
 module.exports = {
   generateHostAuthToken,
   fetchAllQuestions,
-  registerNewGame
+  registerNewGame,
+  getProblemDetails
 };

@@ -126,4 +126,62 @@ export async function registerPlayer(gameID, playerName) {
   }
 }
 
+export async function getProblemDetails(problemName) {
+  const url = `http://${serverIP}:${serverPort}/host/public/get-problem-details`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        problemName: problemName
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { problemDetails } = data;
+    return problemDetails;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
 // SECURE
+
+export async function getCurrentProblem(gameID, playerName) {
+
+  // TODO: remove once backend API is implemented
+  return "two-sum";
+
+  const url = `http://${serverID}:${serverPort}/player/secure/get-current-problem`;
+  const token = sessionStorage.getItem("playerToken");
+  if (!token) {
+    return "";
+  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "gameID": gameID,
+        "playerName": playerName
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { problemName } = data;
+    return data;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}

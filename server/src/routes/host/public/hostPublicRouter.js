@@ -4,7 +4,8 @@ const hostPublicRouter = express.Router();
 const {
   fetchAllQuestions,
   registerNewGame,
-  generateHostAuthToken
+  generateHostAuthToken,
+  getProblemDetails
 } = require ("./hostPublicMethods")
 
 hostPublicRouter.get("/get-all-problems", async function (_, res) {
@@ -36,6 +37,21 @@ hostPublicRouter.post("/register-new-game", async function(req, res) {
     res.status(500).json({
       error: err.message
     });
+  }
+});
+
+hostPublicRouter.post("/get-problem-details", async function(req, res) {
+  try {
+    const { problemName } = req.body;
+    const details = await getProblemDetails(problemName);
+    res.status(200).json({
+      problemDetails: details
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    })
   }
 });
 

@@ -9,6 +9,33 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
   }
 });
 
-module.exports = {
+async function getGameSessions(){
+  const sqlQuery = "SELECT gameID FROM GameTable;"
+  return new Promise((resolve, reject) => {
+    db.all(sqlQuery, function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
 
+async function getGamePlayers(gameID){
+  const sqlQuery = "SELECT playerName FROM PlayerTable WHERE PlayerTable.gameID = ?;"
+  return new Promise((resolve, reject) => {
+    db.get(sqlQuery, [gameID], function (err, row) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+
+module.exports = {
+  getGameSessions,
+  getGamePlayers
 };

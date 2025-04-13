@@ -1,12 +1,14 @@
 import { getAllProblems, registerGame } from "@utility/api";
 import ProblemSelectPreview from "@components/ProblemSelectPreview";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function StartGamePage() {
   const [problemList, setProblemList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedProblems, setSelectedProblems] = useState([]);
+  const navitate = useNavigate();
 
   useEffect(() => {
     const getProblems = async () => {
@@ -34,7 +36,11 @@ export default function StartGamePage() {
 
   const handleStartGame = async () => {
     const newGameID = await registerGame(selectedProblems);
-    console.log(`Here is the new gameID: ${newGameID}`);
+    if (newGameID.length !== 0) {
+      navitate(`/run-game/${newGameID}`);
+    } else {
+      alert("Error, unable to register game");
+    }
   }
 
   return (

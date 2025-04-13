@@ -37,7 +37,7 @@ export default function App() {
             <Route path="/join-game" element={<JoinGamePage/>} />
             <Route path="/play-game/:game-id/:player-name" element={<PlayGamePage/>} />
             <Route path="/enter-player-name/:game-id" element={<EnterPlayerNamePage/>} />
-            <Route path="run-game/:game-id" element={<RunGamePage/>} />
+            <Route path="/run-game/:game-id" element={<RunGamePage/>} />
             <Route path="*" element={<NotFoundPage/>} />
           </Routes>
         </div>

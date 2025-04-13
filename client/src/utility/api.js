@@ -152,7 +152,7 @@ export async function getProblemDetails(problemName) {
 
 // SECURE
 
-export async function getCurrentProblem(gameID, playerName) {
+export async function getCurrentProblemPlayer(gameID, playerName) {
 
   // TODO: remove once backend API is implemented
   return "two-sum";
@@ -184,4 +184,9 @@ export async function getCurrentProblem(gameID, playerName) {
     console.error(err);
     return "";
   }
+}
+
+// TODO: implement this
+export async function getCurrentProblemHost(gameID) {
+  return "two-sum";
 }

@@ -1,7 +1,7 @@
 import CodeEditorComponent from "@components/game-components/CodeEditorComponent";
 import ProblemDetailsComponent from "@components/game-components/ProblemDetailsComponent";
 import { useEffect, useState } from "react";
-import { getProblemDetails, getCurrentProblem } from "@utility/api";
+import { getProblemDetails, getCurrentProblemPlayer } from "@utility/api";
 
 export default function CodeEditorPage({ gameID, playerName }) {
   const [codeText, setCodeText] = useState("");
@@ -11,7 +11,7 @@ export default function CodeEditorPage({ gameID, playerName }) {
 
   useEffect(() => {
     const getProblemName = async () => {
-      const name = await getCurrentProblem(gameID, playerName);
+      const name = await getCurrentProblemPlayer(gameID, playerName);
       setProblemName(name);
     };
     getProblemName();

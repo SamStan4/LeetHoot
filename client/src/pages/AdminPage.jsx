@@ -21,19 +21,20 @@ async function getSessions(){
 //const sessions = [s1, s2]
 
 export default function AdminPage(){
-    const test = getSessions()
-    console.log(test)
+    //const test = getSessions()
+    let sessionList = []
 
     const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
         async function fetchSessions() {
-            const data = await getSessions(); // wait for the promise
-            setSessions(data || []); // avoid undefined
+            const sessions = await getSessions(); // wait for the promise
+            setSessions(sessions || []); // avoid undefined
+            //return sessions.map((s, index)=> <SessionComponent key={index} session={s}/>)
         }
 
         fetchSessions();
-    }, []);
+    }, [sessions]);
 
     const s1 = {
         "gameID": 1
@@ -44,7 +45,7 @@ export default function AdminPage(){
     }
     const ses = [s1, s2];
     //const sessionList = ses.map((s, index)=> <SessionComponent key={index} session={s}/>)
-    const sessionList = sessions.map((s, index)=> <SessionComponent key={index} session={s}/>)
+    sessionList = sessions.map((s, index)=> <SessionComponent key={index} session={s}/>)
     return(
         <div className="flex justify-center items-center w-full h-full text-amber-50">
             <div className="w-[60%] h-[70%] min-h-[200px] min-w-[200px] bg-[#212526] rounded-[20px] border-[1px] border-[#87898A] flex flex-col items-center justify-center gap-[15px]">

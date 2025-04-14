@@ -3,7 +3,8 @@ const adminPublicRouter = express.Router();
 
 const {
   getGamePlayers,
-  getGameSessions
+  getGameSessions,
+  deleteSession
 } = require ("./adminPublicMethods")
 
 adminPublicRouter.get("/get-sessions", async function(req, res) {
@@ -24,6 +25,26 @@ adminPublicRouter.get("/get-sessions", async function(req, res) {
     });
   }
 });
+
+adminPublicRouter.post("/delete-session", function(req, res){
+  try{
+    //const { gameID } = req.params;
+    const gameID = 18
+    const val = deleteSession(gameID);
+
+    res.status(200).json({
+      status: true,
+      message: val
+  })
+  }
+  catch(err){
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    })
+  }
+});
+
 
 //No worky. Will come back to when necessary
 adminPublicRouter.post("/get-players/:gameID", async function(req, res) {

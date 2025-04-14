@@ -9,6 +9,15 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
   }
 });
 
-module.exports = {
+async function deleteSession(sessionID){
+  const sqlQuery = "DELETE FROM GameTable WHERE gameID = ?"
+  db.run(sqlQuery, sessionID, function(err){
+    if(err){
+      return console.error(err.message);
+    }
+  });
+}
 
+module.exports = {
+  deleteSession
 };

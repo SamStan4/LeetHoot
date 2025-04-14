@@ -35,7 +35,22 @@ async function getGamePlayers(gameID){
   });
 }
 
+async function deleteSession(sessionID){
+  const sqlQuery = "DELETE FROM GameTable WHERE gameID = ?"
+  new Promise((resolve, reject) => {
+    db.run(sqlQuery, sessionID, function(err, status){
+      if(err){
+        reject(err)
+        return console.error(err.message);
+      }else{
+        resolve(status)
+      }
+    });
+  })
+}
+
 module.exports = {
   getGameSessions,
-  getGamePlayers
+  getGamePlayers,
+  deleteSession
 };

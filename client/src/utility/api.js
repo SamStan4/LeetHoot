@@ -153,11 +153,7 @@ export async function getProblemDetails(problemName) {
 // SECURE
 
 export async function getCurrentProblemPlayer(gameID, playerName) {
-
-  // TODO: remove once backend API is implemented
-  return "two-sum";
-
-  const url = `http://${serverID}:${serverPort}/player/secure/get-current-problem`;
+  const url = `http://${serverIP}:${serverPort}/player/secure/get-current-problem`;
   const token = sessionStorage.getItem("playerToken");
   if (!token) {
     return "";
@@ -179,14 +175,73 @@ export async function getCurrentProblemPlayer(gameID, playerName) {
     }
     const data = await response.json();
     const { problemName } = data;
-    return data;
+    return problemName;
   } catch (err) {
     console.error(err);
     return "";
   }
 }
 
-// TODO: implement this
 export async function getCurrentProblemHost(gameID) {
-  return "two-sum";
+  const url = `http://${serverIP}:${serverPort}/host/secure/get-current-problem`;
+  const token = sessionStorage.getItem("hostToken");
+  if (!token) {
+    return "";
+  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "gameID": gameID
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { problemName } = data;
+    if (!problemName) {
+      return "";
+    }
+    return problemName;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
+
+export async function incrementDeckIndex(gameID) {
+  const url = `http://${serverIP}:${serverPort}/host/secure/increment-game-idx`;
+  const token = sessionStorage.getItem("hostToken");
+  if (!token) {
+    return false;
+  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "gameID": gameID
+      })
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    const { status } = data;
+    if (!status) {
+      return false;
+    }
+    return status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }

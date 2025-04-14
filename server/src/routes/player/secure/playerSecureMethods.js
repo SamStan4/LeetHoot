@@ -67,9 +67,15 @@ function CalculateUserScore(userResults){
     
 }
 
+// TODO: implement this
+async function getCurrentQuestion(gameID) {
+  return "two-sum";
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
   verifyPlayerAuthToken,
-  CalculateUserScore
+  CalculateUserScore,
+  getCurrentQuestion
 };

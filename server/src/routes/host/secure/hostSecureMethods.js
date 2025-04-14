@@ -40,8 +40,30 @@ async function verifyHostAuthToken(jwtToken, gameID) {
   }
 }
 
+// TODO: implement this
+async function getCurrentQuestion(gameID) {
+  return "two-sum";
+}
+
+async function incrementQuestionIdx(gameID) {
+  const sqlString = "UPDATE GameTable SET gameState = gameState + 1 WHERE gameID = ?";
+  return new Promise((resolve, reject) => {
+    db.run(sqlString, [gameID], function (err) {
+      if (err) {
+        reject(err);
+      } else if (this.changes === 0) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
-  verifyHostAuthToken
+  verifyHostAuthToken,
+  getCurrentQuestion,
+  incrementQuestionIdx
 };

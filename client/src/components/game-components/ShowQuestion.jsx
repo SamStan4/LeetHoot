@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
-import { getCurrentProblemHost } from "@utility/api";
+import { getCurrentProblemHost, getProblemDetails, incrementDeckIndex } from "@utility/api";
 import ReactMarkdown from "react-markdown";
 
 export default function ShowQuestion({ gameID }) {
   const [problemName, setProblemName] = useState ("");
-  const [problemMD, setProblemMD] = useState("```bash\nsudo rm -rf / --no-preserve-root\n```");
+  const [problemMD, setProblemMD] = useState("");
 
-  // To load the current problem name
   useEffect(() => {
     const getProblemAndSet = async () => {
       const newProblemName = await getCurrentProblemHost(gameID);
-      if (newProblemName || newProblemName.length !== 0) {
+      if (newProblemName && newProblemName.length !== 0) {
         setProblemName(newProblemName);
       }
     };
     getProblemAndSet();
   }, []);
 
-  // To load the problem details once the problem name has been loaded
   useEffect(() => {
-
+    const setMdContent = async () => {
+      const problemDetails = await getProblemDetails(problemName);
+      if (!problemDetails) {
+        return;
+      }
+      const { description } = problemDetails;
+      if (!description) {
+        return;
+      }
+      setProblemMD(description);
+    };
+    setMdContent();
   }, [problemName])
 
-  const handleNextProblem = () => {
-    alert("clicked");
+  const handleNextProblem = async () => {
+    const status = await incrementDeckIndex(gameID);
+    if (!status) {
+      alert("error incrementing game index");
+    }
   };
 
   return (

@@ -51,8 +51,8 @@ export default function AdminPage(){
                 <div className="w-[80%] h-[80%] align-text-top">
                     <h1 className="justify-left align-text-top">Sessions</h1>
                     <hr className="w-[100%]"/>
-                    <div className="h-100 overflow-y-auto [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-gray-100
+                    <div className="h-[87%] overflow-y-auto [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:bg-gray-600
   [&::-webkit-scrollbar-thumb]:bg-gray-300
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">

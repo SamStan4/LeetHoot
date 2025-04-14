@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import SessionComponent from "../components/admin-components/SessionComponent";
-//import { response } from "express";
-
 
 async function getSessions(){
     const url = "http://localhost:8080/admin/public/get-sessions"
@@ -20,21 +18,9 @@ async function getSessions(){
       }
 }
 
-
-
-const s1 = {
-    "gameID": 1
-}
-
-const s2 = {
-    "gameID": 2
-}
-
-const sessions = [s1, s2]
+//const sessions = [s1, s2]
 
 export default function AdminPage(){
-    //const test = getSessions()
-    //const test = await fetch("http://localhost:8080/admin/public/get-sessions").then(response => response.json()).catch(error => console.error('Error:', error))
     const test = getSessions()
     console.log(test)
 

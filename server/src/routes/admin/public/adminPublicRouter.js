@@ -28,14 +28,16 @@ adminPublicRouter.get("/get-sessions", async function(req, res) {
 
 adminPublicRouter.post("/delete-session", function(req, res){
   try{
-    //const { gameID } = req.params;
-    const gameID = 18
+    const { gameID } = req.body;
+    //const gameID = 18
     const val = deleteSession(gameID);
 
     res.status(200).json({
       status: true,
       message: val
+
   })
+  console.log("success " + gameID);
   }
   catch(err){
     console.error(err);

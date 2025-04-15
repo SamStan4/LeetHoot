@@ -149,6 +149,11 @@ export async function getProblemDetails(problemName) {
   }
 }
 
+// TODO: implement this
+export async function hostLogin(userName, password) {
+  return false;
+}
+
 // SECURE
 
 export async function getCurrentProblemPlayer(gameID, playerName) {

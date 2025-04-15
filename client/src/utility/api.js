@@ -374,3 +374,107 @@ export async function getCurGameStatePlayer(gameID) {
     return "";
   }
 }
+
+export async function getAllGames() {
+  const url = `http://${serverIP}:${serverPort}/admin/secure/games/all`;
+  const token = sessionStorage.getItem("adminToken");
+  if (!token) {
+    return [];
+  }
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return [];
+    }
+    const data = await response.json();
+    return data.games;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export async function getGamePlayers(gameID) {
+  const url = `http://${serverIP}:${serverPort}/admin/secure/games/players/${gameID}`;
+  const token = sessionStorage.getItem("adminToken");
+  if (!token) {
+    return [];
+  }
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return [];
+    }
+    const data = await response.json();
+    return data.playerList;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export async function deleteGameAdmin(gameID) {
+  const url = `http://${serverIP}:${serverPort}/admin/secure/games/${gameID}`;
+  const token = sessionStorage.getItem("adminToken");
+  if (!token) {
+    return false;
+  }
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return false;
+    }
+    const data = await response.json();
+    return data.status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+export async function deletePlayerAdmin(gameID, playerID) {
+  const url = `http://${serverIP}:${serverPort}/admin/secure/games/player/${gameID}/${playerID}`;
+  const token = sessionStorage.getItem("adminToken");
+  if (!token) {
+    return false;
+  }
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return false;
+    }
+    const data = await response.json();
+    return data.status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}

@@ -1,11 +1,14 @@
 const express = require('express');
-const adminSecureROuter = express.Router();
+const adminSecureRouter = express.Router();
 
 const {
-  getAllGames
+  getAllGames,
+  getGamePlayers,
+  deleteGame,
+  removePlayer
 } = require ("./adminSecureMethods")
 
-adminSecureROuter.get("/games/all", async function (_, res) {
+adminSecureRouter.get("/games/all", async function (_, res) {
   try {
     const games = await getAllGames();
     const gamesJson = games.map((game) => {
@@ -30,13 +33,58 @@ adminSecureROuter.get("/games/all", async function (_, res) {
   }
 });
 
+adminSecureRouter.get("/games/players/:gameID", async function (req, res) {
+  try {
+    const { gameID } = req.params;
+    const players = await getGamePlayers(gameID);
+    return res.status(200).json({
+      playerList: players
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+adminSecureRouter.delete("/games/:gameID", async function (req, res) {
+  try {
+    const { gameID } = req.params;
+    const status = await deleteGame(gameID);
+    return res.status(200).json({
+      status: status
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+adminSecureRouter.delete("/games/player/:gameID/:playerName", async function (req, res) {
+  try {
+    const { gameID, playerName } = req.params;
+    const status = await removePlayer(gameID, playerName);
+    return res.status(200).json({
+      status: status
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: err
+    });
+  }
+});
+
 /**
  * Catch all endpoint for bad requests
  */
-adminSecureROuter.all("*", async function(_, res) {
+adminSecureRouter.all("*", async function(_, res) {
   res.status(404).json({
     error: "Not Found"
   });
 });
 
-module.exports = adminSecureROuter;
+module.exports = adminSecureRouter;

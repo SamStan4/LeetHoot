@@ -316,3 +316,29 @@ export async function endGameHost(gameID) {
     return false;
   }
 }
+
+export async function getCurGameStatePlayer(gameID) {
+  const url = `http://${serverIP}:${serverPort}/player/secure/game-state/${gameID}`;
+  const token = sessionStorage.getItem("playerToken");
+  if (!token) {
+    return "";
+  }
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return "";
+    }
+    const data = await response.json();
+    return data.gameState;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}

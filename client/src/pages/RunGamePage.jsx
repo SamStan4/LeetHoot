@@ -15,14 +15,17 @@ export default function RunGamePage() {
   const navitate = useNavigate();
 
   useEffect(() => {
-    const handleGameState = () => {
+    const handleGameState = async () => {
       getCurGameStateHost(gameId).then(setGameState);
       setRefreshTrigger((prev) => prev + 1);
     };
     const handleEndGame = () => {
       navitate("/");
     };
-    if (!gameId) return;
+    if (!gameId) {
+      console.error("gameID undefined");
+      return;
+    }
     socket.emit("host-join-game", { gameID: gameId });
     socket.on("update-game-state", handleGameState);
     socket.on("game-end", handleEndGame);

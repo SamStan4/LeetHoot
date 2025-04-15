@@ -2,7 +2,8 @@ const express = require('express');
 
 const {
   verifyPlayerAuthToken,
-  getCurrentQuestion
+  getCurrentQuestion,
+  fetchGameState
 } = require("./playerSecureMethods");
 
 module.exports = function (io) {
@@ -52,6 +53,20 @@ module.exports = function (io) {
     } catch (err) {
       console.error(err);
       res.status(500).json({
+        error: err.message
+      });
+    }
+  });
+
+  playerSecureRouter.get("/game-state/:gameID", async function (req, res) {
+    try {
+      const { gameID } = req.params;
+      const state = await fetchGameState(gameID);
+      return res.status(200).json({
+        gameState: state
+      });
+    } catch (err) {
+      return res.status(500).json({
         error: err.message
       });
     }

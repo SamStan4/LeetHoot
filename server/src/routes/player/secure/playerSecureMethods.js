@@ -67,15 +67,62 @@ function CalculateUserScore(userResults){
     
 }
 
-// TODO: implement this
 async function getCurrentQuestion(gameID) {
-  return "two-sum";
+  const sqlString = "SELECT gameQuestions, gameState FROM GameTable WHERE gameID = ?;"
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID], function (err, row) {
+      if (err) {
+        return reject(err)
+      } else if (!row) {
+        return reject(new Error ("row undefined"));
+      }
+      try {
+        const gameQuestions = JSON.parse(row.gameQuestions).questions;
+        const gameState = row.gameState;
+        if (gameState < 0 || gameState >= gameQuestions.length) {
+          return resolve("");
+        } else {
+          resolve(gameQuestions[gameState]);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
 }
+
+async function fetchGameState(gameID) {
+  const sqlString = "SELECT * FROM GameTable WHERE gameID = ?;"
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID], function (err, row) {
+      if (err) {
+        return reject(err);
+      } else if (!row) {
+        return reject(new Error("game not found"));
+      }
+      try {
+        const gameQuestions = JSON.parse(row.gameQuestions)["questions"];
+        const gameState = row.gameState;
+        if (gameState === -1) {
+          return resolve("pre-lobby");
+        } else if (gameState === gameQuestions.length) {
+          return resolve("post-lobby");
+        } else {
+          return resolve("running");
+        }
+      } catch (parseErr) {
+        reject(parseErr);
+      }
+    });
+  });
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
   verifyPlayerAuthToken,
   CalculateUserScore,
-  getCurrentQuestion
+  getCurrentQuestion,
+  fetchGameState
 };

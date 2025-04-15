@@ -3,7 +3,7 @@ import ProblemDetailsComponent from "@components/game-components/ProblemDetailsC
 import { useEffect, useState } from "react";
 import { getProblemDetails, getCurrentProblemPlayer } from "@utility/api";
 
-export default function CodeEditorPage({ gameID, playerName }) {
+export default function CodeEditorPage({ gameID, playerName, refreshTrigger, setCanSee }) {
   const [codeText, setCodeText] = useState("");
   const [mdContent, setMdContent] = useState("");
   const [terminalContent, setTerminalContent] = useState("");
@@ -15,7 +15,7 @@ export default function CodeEditorPage({ gameID, playerName }) {
       setProblemName(name);
     };
     getProblemName();
-  }, []);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const setDetails = async () => {
@@ -25,6 +25,7 @@ export default function CodeEditorPage({ gameID, playerName }) {
       }
       setCodeText(problemDetails.solutionTemplate);
       setMdContent(problemDetails.description);
+      setTerminalContent("");
     };
     setDetails();
   }, [problemName]);
@@ -32,6 +33,7 @@ export default function CodeEditorPage({ gameID, playerName }) {
   const handleSubmitCode = async () => {
     // TODO: add a submit route in the backend
     console.log("submitting code");
+    setCanSee(false);
   };
 
   const handleRunCode = async () => {

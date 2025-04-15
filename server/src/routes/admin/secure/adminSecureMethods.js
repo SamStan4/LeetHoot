@@ -9,6 +9,18 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
   }
 });
 
-module.exports = {
+async function getAllGames() {
+  const sqlString = "SELECT * FROM GameTable ORDER BY gameID ASC;";
+  return new Promise((resolve, reject) => {
+    db.all(sqlString, [], (err, rows) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
 
+module.exports = {
+  getAllGames
 };

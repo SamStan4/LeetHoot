@@ -3,7 +3,8 @@ const express = require('express');
 const {
   verifyPlayerAuthToken,
   getCurrentQuestion,
-  fetchGameState
+  fetchGameState,
+  runCode
 } = require("./playerSecureMethods");
 
 module.exports = function (io) {
@@ -71,6 +72,18 @@ module.exports = function (io) {
       });
     }
   });
+
+  playerSecureRouter.post("/run-problem", async function (req, res) {
+    try {
+      const { playerCode, problemName } = req.body;
+      const result = await runCode(playerCode, problemName);
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
+  })
 
   playerSecureRouter.all("*", async function(req, res) {
     res.status(404).json({

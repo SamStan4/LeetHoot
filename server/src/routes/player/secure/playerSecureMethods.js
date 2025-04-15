@@ -4,6 +4,8 @@ require("dotenv").config();
 
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
+const problemApiIP = process.env.PROBLEM_API_IP;
+const problemApiPort = process.env.PROBLEM_API_PORT;
 const jwtSecret = process.env.JWT_SECRET;
 
 if (!jwtSecret) {
@@ -117,6 +119,26 @@ async function fetchGameState(gameID) {
   });
 }
 
+async function runCode(playerCode, problemName) {
+  const url = `http://${problemApiIP}:${problemApiPort}/api/v1/problems/${problemName}/run`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      clientCode: playerCode,
+      stopOnFail: true,
+      language: 'python3',
+      testCaseIndexes: '0-2'
+    })
+  });
+  if (!response.ok) {
+    throw new Error("response not ok");
+  }
+  return response;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -124,5 +146,6 @@ module.exports = {
   verifyPlayerAuthToken,
   CalculateUserScore,
   getCurrentQuestion,
-  fetchGameState
+  fetchGameState,
+  runCode
 };

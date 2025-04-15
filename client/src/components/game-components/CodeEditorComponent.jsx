@@ -32,7 +32,9 @@ export default function CodeEditorComponent({ codeText, setCodeText, onSubmit, o
             value={codeText}
             height={`${codeMirrorContainerHeight}px`}
             width="100%"
-            extensions={[python()]}
+            extensions={[
+              python(),
+            ]}
             onChange={(newCodeText) => setCodeText(newCodeText)}
             theme="dark"
             basicSetup={{ lineNumbers: true }}

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import WaitingForHost from '@components/game-components/WaitingForHost';
 import CodeEditor from '@components/game-components/CodeEditorPage';
+import GameOverComponent from '@components/game-components/GameOverComponent';
 import socket from '@utility/socket';
 import { GAME_STATES } from '@const/gameStates';
 import { getCurGameStatePlayer } from '@utility/api';
@@ -56,7 +57,9 @@ export default function PlayGamePage() {
       }
     break;
     case GAME_STATES.POST_LOBBY:
-
+      content = (
+        <GameOverComponent/>
+      );
     break;
     default:
        content = (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getCurrentProblemHost, getProblemDetails, incrementDeckIndex } from "@utility/api";
 import ReactMarkdown from "react-markdown";
 
-export default function ShowQuestion({ gameID }) {
+export default function ShowQuestion({ gameID, refreshTrigger }) {
   const [problemName, setProblemName] = useState ("");
   const [problemMD, setProblemMD] = useState("");
 
@@ -14,7 +14,7 @@ export default function ShowQuestion({ gameID }) {
       }
     };
     getProblemAndSet();
-  }, []);
+  }, [gameID, refreshTrigger]);
 
   useEffect(() => {
     const setMdContent = async () => {

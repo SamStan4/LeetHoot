@@ -1,25 +1,39 @@
 import { useParams } from 'react-router-dom';
 import ShowGameId from '@components/game-components/ShowGameId';
 import ShowQuestion from '@components/game-components/showQuestion';
+import ShowScoreBoard from '@components/game-components/ShowScoreBoard';
 import { useEffect, useState } from 'react';
 import socket from '@utility/socket';
 import { GAME_STATES } from '@const/gameStates';
+import { getCurGameStateHost, incrementDeckIndex } from '@utility/api';
+import { useNavigate } from "react-router-dom";
 
 export default function RunGamePage() {
-  const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
+  const [gameState, setGameState] = useState(GAME_STATES.PRE_LOBBY);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { "game-id": gameId } = useParams();
+  const navitate = useNavigate();
 
   useEffect(() => {
-    const handleGameState = (newGameState) => setGameState(newGameState);
+    const handleGameState = () => {
+      getCurGameStateHost(gameId).then(setGameState);
+      setRefreshTrigger((prev) => prev + 1);
+    };
+    const handleEndGame = () => {
+      navitate("/");
+    };
     if (!gameId) return;
     socket.emit("host-join-game", { gameID: gameId });
     socket.on("update-game-state", handleGameState);
-    return () => socket.off("update-game-state", handleGameState);
-  }, [gameId])
+    socket.on("game-end", handleEndGame);
+    return () => {
+      socket.off("update-game-state", handleGameState);
+      socket.off("end-game", handleEndGame);
+    }
+  }, [gameId]);
 
   const handleStartGame = async () => {
-    console.log("starting the game");
+    incrementDeckIndex(gameId);
   }
 
   let content;
@@ -44,11 +58,9 @@ export default function RunGamePage() {
     case GAME_STATES.POST_LOBBY:
       // TODO: implement this
       content = (
-        <div>
-          <h1>
-            Not implemented
-          </h1>
-        </div>
+        <ShowScoreBoard
+          gameID={gameId}
+        />
       );
     break;
     default:

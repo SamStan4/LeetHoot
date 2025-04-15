@@ -26,7 +26,6 @@ export async function checkGameExistance(gameId) {
   }
 }
 
-// TODO: implement this
 export async function checkNameAvailability(gameId, name) {
   const url = `http://${serverIP}:${serverPort}/player/public/check-name-availability`;
   try {
@@ -240,6 +239,78 @@ export async function incrementDeckIndex(gameID) {
       return false;
     }
     return status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+export async function getCurGameStateHost(gameID) {
+  const url = `http://${serverIP}:${serverPort}/host/secure/game-state/${gameID}`;
+  const token = sessionStorage.getItem("hostToken");
+  if (!token) {
+    return "";
+  }
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return "";
+    }
+    const data = await response.json();
+    return data.gameState;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
+
+export async function getLeaderBoard(gameID) {
+  const url = `http://${serverIP}:${serverPort}/host/secure/leader-board/${gameID}`;
+  const token = sessionStorage.getItem("hostToken");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return [];
+    }
+    const data = await response.json();
+    return data.leaderBoard;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export async function endGameHost(gameID) {
+  const url = `http://${serverIP}:${serverPort}/host/secure/end-game/${gameID}`;
+  const token = sessionStorage.getItem("hostToken");
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return false;
+    }
+    const data = await response.json();
+    return data.success;
   } catch (err) {
     console.error(err);
     return false;

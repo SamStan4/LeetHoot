@@ -3,7 +3,10 @@ const express = require('express');
 const {
   verifyHostAuthToken,
   getCurrentQuestion,
-  incrementQuestionIdx
+  incrementQuestionIdx,
+  fetchGameState,
+  getLeaderBoard,
+  deleteGame
 } = require ("./hostSecureMethods");
 
 module.exports = function(io) {
@@ -62,11 +65,58 @@ module.exports = function(io) {
     try {
       const { gameID } = req.body;
       const result = await incrementQuestionIdx(gameID);
+      if (result) {
+        io.to(gameID).emit("update-game-state");
+      }
       res.status(200).json({
         status: result
       });
     } catch (err) {
       res.status(500).json({
+        error: err.message
+      });
+    }
+  });
+
+  hostSecureRouter.get("/game-state/:gameID", async function (req, res) {
+    try {
+      const { gameID } = req.params;
+      const state = await fetchGameState(gameID);
+      return res.status(200).json({
+        gameState: state
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+  });
+
+  hostSecureRouter.get("/leader-board/:gameID", async function (req, res) {
+    try {
+      const { gameID } = req.params;
+      const players = await getLeaderBoard(gameID);
+      return res.status(200).json({
+        leaderBoard: players
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+  });
+
+  hostSecureRouter.delete("/end-game/:gameID", async function (req, res) {
+    try {
+      const { gameID } = req.params;
+      const success = await deleteGame(gameID);
+      io.to(gameID).emit("game-end");
+      return res.status(200).json({
+        success: success
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
         error: err.message
       });
     }

@@ -40,13 +40,32 @@ async function verifyHostAuthToken(jwtToken, gameID) {
   }
 }
 
-// TODO: implement this
 async function getCurrentQuestion(gameID) {
-  return "two-sum";
+  const sqlString = "SELECT gameQuestions, gameState FROM GameTable WHERE gameID = ?;"
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID], function (err, row) {
+      if (err) {
+        return reject(err)
+      } else if (!row) {
+        return reject(new Error ("row undefined"));
+      }
+      try {
+        const gameQuestions = JSON.parse(row.gameQuestions).questions;
+        const gameState = row.gameState;
+        if (gameState < 0 || gameState >= gameQuestions.length) {
+          return resolve("");
+        } else {
+          resolve(gameQuestions[gameState]);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
 }
 
 async function incrementQuestionIdx(gameID) {
-  const sqlString = "UPDATE GameTable SET gameState = gameState + 1 WHERE gameID = ?";
+  const sqlString = "UPDATE GameTable SET gameState = gameState + 1 WHERE gameID = ?;";
   return new Promise((resolve, reject) => {
     db.run(sqlString, [gameID], function (err) {
       if (err) {
@@ -60,10 +79,64 @@ async function incrementQuestionIdx(gameID) {
   });
 }
 
+async function fetchGameState(gameID) {
+  const sqlString = "SELECT * FROM GameTable WHERE gameID = ?;"
+  return new Promise((resolve, reject) => {
+    db.get(sqlString, [gameID], function (err, row) {
+      if (err) {
+        return reject(err);
+      } else if (!row) {
+        return reject(new Error("game not found"));
+      }
+      try {
+        const gameQuestions = JSON.parse(row.gameQuestions)["questions"];
+        const gameState = row.gameState;
+        if (gameState === -1) {
+          return resolve("pre-lobby");
+        } else if (gameState === gameQuestions.length) {
+          return resolve("post-lobby");
+        } else {
+          return resolve("running");
+        }
+      } catch (parseErr) {
+        reject(parseErr);
+      }
+    });
+  });
+}
+
+async function getLeaderBoard(gameID) {
+  const sqlString = "SELECT playerName, score FROM PlayerTable WHERE gameID = ? ORDER BY score DESC;"
+  return new Promise((resolve, reject) => {
+    db.all(sqlString, [gameID], function (err, rows) {
+      if (err) {
+        return reject(err);
+      } else if (!rows) {
+        return reject (new Error("rows undefined"));
+      }
+      resolve(rows);
+    });
+  })
+}
+
+async function deleteGame(gameID) {
+  const sqlString = "DELETE FROM GameTable WHERE gameID = ?;";
+  return new Promise((resolve, reject) => {
+    db.run(sqlString, [gameID], function (err) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(this.changes > 0);
+    });
+  });
+}
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 module.exports = {
   verifyHostAuthToken,
   getCurrentQuestion,
-  incrementQuestionIdx
+  incrementQuestionIdx,
+  fetchGameState,
+  getLeaderBoard,
+  deleteGame
 };

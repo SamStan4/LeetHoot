@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import SessionComponent from "../components/admin-components/SessionComponent";
+//import { deleteSession } from "server/src/routes/admin/public/adminPublicMethods";
 
 async function getSessions(){
     const url = "http://localhost:8080/admin/public/get-sessions"
@@ -11,11 +12,26 @@ async function getSessions(){
         }
     
         const json = await response.json();
-        //console.log(json.sessions)
         return json.sessions
       } catch (error) {
         console.error(error.message);
-      }
+    }
+}
+
+async function endSession(gameID){
+    fetch("http://localhost:8080/admin/public/delete-session",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                gameID: gameID
+            })
+        }
+    ).then(response => {
+        console.log(response.status);
+    })
 }
 
 //const sessions = [s1, s2]
@@ -28,24 +44,21 @@ export default function AdminPage(){
 
     useEffect(() => {
         async function fetchSessions() {
-            const sessions = await getSessions(); // wait for the promise
-            setSessions(sessions || []); // avoid undefined
-            //return sessions.map((s, index)=> <SessionComponent key={index} session={s}/>)
+            const session = await getSessions();
+            setSessions(session || []);
         }
-
         fetchSessions();
-    }, [sessions]);
+    }, []);
 
-    const s1 = {
-        "gameID": 1
+    async function handler(gameID){
+        console.log(gameID)
+        endSession(gameID);
+        const session = await getSessions();
+        setSessions(session || []);
     }
-    
-    const s2 = {
-        "gameID": 2
-    }
-    const ses = [s1, s2];
+
     //const sessionList = ses.map((s, index)=> <SessionComponent key={index} session={s}/>)
-    sessionList = sessions.map((s, index)=> <SessionComponent key={index} session={s}/>)
+    //sessionList = sessions.map((s, index)=> <SessionComponent key={index} onDelete={handler} session={s}/>)
     return(
         <div className="flex justify-center items-center w-full h-full text-amber-50">
             <div className="w-[60%] h-[70%] min-h-[200px] min-w-[200px] bg-[#212526] rounded-[20px] border-[1px] border-[#87898A] flex flex-col items-center justify-center gap-[15px]">
@@ -57,7 +70,7 @@ export default function AdminPage(){
   [&::-webkit-scrollbar-thumb]:bg-gray-300
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-                        {sessionList}
+                        {sessions.map((s, index)=> <SessionComponent key={index} onDelete={handler} session={s}/>)}
                     </div>
                 </div>
             </div>

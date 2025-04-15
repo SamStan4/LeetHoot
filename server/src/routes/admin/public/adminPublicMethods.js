@@ -25,7 +25,7 @@ async function getGameSessions(){
 async function getGamePlayers(gameID){
   const sqlQuery = "SELECT playerName FROM PlayerTable WHERE PlayerTable.gameID = ?;"
   return new Promise((resolve, reject) => {
-    db.get(sqlQuery, [gameID], function (err, row) {
+    db.all(sqlQuery, [gameID], function (err, row) {
       if (err) {
         reject(err);
       } else {
@@ -49,8 +49,13 @@ async function deleteSession(sessionID){
   })
 }
 
+async function deletePlayer(playerName, gameID){
+
+}
+
 module.exports = {
   getGameSessions,
   getGamePlayers,
-  deleteSession
+  deleteSession,
+  deletePlayer
 };

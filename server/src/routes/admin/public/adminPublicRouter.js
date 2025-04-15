@@ -4,7 +4,8 @@ const adminPublicRouter = express.Router();
 const {
   getGamePlayers,
   getGameSessions,
-  deleteSession
+  deleteSession,
+  deletePlayer
 } = require ("./adminPublicMethods")
 
 adminPublicRouter.get("/get-sessions", async function(req, res) {
@@ -25,6 +26,24 @@ adminPublicRouter.get("/get-sessions", async function(req, res) {
     });
   }
 });
+
+adminPublicRouter.post("/remove-player", function(req, res){
+  try{
+    const {playerName} = req.body;
+    const {gameID} = req.body
+    deletePlayer(playerName, gameID)
+    res.status(200).json({
+      status: true
+    })
+    console.log("success " + playerName)
+  }
+  catch(err){
+    console.error(err)
+    res.status(500).json({
+      error: err.message
+    })
+  }
+})
 
 adminPublicRouter.post("/delete-session", function(req, res){
   try{
@@ -49,10 +68,21 @@ adminPublicRouter.post("/delete-session", function(req, res){
 
 
 //No worky. Will come back to when necessary
-adminPublicRouter.post("/get-players/:gameID", async function(req, res) {
-  const { gameID } = req.params;
-  const players = await getGamePlayers(gameID);
-  res.json({ gameID, PlayerNames: players });
+adminPublicRouter.post("/get-players", async function(req, res) {
+  try{
+    const {gameID} = req.body;
+    const players = await getGamePlayers(gameID);
+    res.status(200).json({
+      status: true,
+      players: players
+    })
+  }
+  catch (err){
+    console.error(err)
+    res.status(500).json({
+      error: err.message
+    })
+  }
 });
 /**
  * Catch all endpoint for bad requests

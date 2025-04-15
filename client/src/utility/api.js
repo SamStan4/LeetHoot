@@ -150,6 +150,82 @@ export async function getProblemDetails(problemName) {
   }
 }
 
+export async function deleteAPlayer(playerName, gameID){
+  const url = `http://${serverIP}:${serverPort}/admin/public/remove-player`
+  fetch(url,
+      {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              playerName: playerName,
+              gameID: gameID
+          })
+      }
+  ).then(response => {
+      console.log(response.status);
+  })
+}
+
+export async function getPlayers(gameID){
+    try{
+        const res = await fetch(`http://${serverIP}:${serverPort}/admin/public/get-players`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    gameID: gameID
+                })
+            }
+        )
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! Status`);
+        }
+
+        const data = await res.json();
+        return data.players;
+    }
+    catch (err){
+        console.error(err);
+        return null
+    }
+}
+
+export async function getSessions(){
+  const url = `http://${serverIP}:${serverPort}/admin/public/get-sessions`
+  try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+  
+      const json = await response.json();
+      return json.sessions
+    } catch (error) {
+      console.error(error.message);
+  }
+}
+
+export async function endSession(gameID){
+  fetch(`http://${serverIP}:${serverPort}/admin/public/delete-session`,
+      {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              gameID: gameID
+          })
+      }
+  ).then(response => {
+      console.log(response.status);
+  })
+}
+
 // SECURE
 
 export async function getCurrentProblem(gameID, playerName) {

@@ -35,7 +35,6 @@ adminPublicRouter.post("/remove-player", function(req, res){
     res.status(200).json({
       status: true
     })
-    console.log("success " + playerName)
   }
   catch(err){
     console.error(err)
@@ -48,7 +47,6 @@ adminPublicRouter.post("/remove-player", function(req, res){
 adminPublicRouter.post("/delete-session", function(req, res){
   try{
     const { gameID } = req.body;
-    //const gameID = 18
     const val = deleteSession(gameID);
 
     res.status(200).json({
@@ -56,7 +54,6 @@ adminPublicRouter.post("/delete-session", function(req, res){
       message: val
 
   })
-  console.log("success " + gameID);
   }
   catch(err){
     console.error(err);
@@ -66,8 +63,6 @@ adminPublicRouter.post("/delete-session", function(req, res){
   }
 });
 
-
-//No worky. Will come back to when necessary
 adminPublicRouter.post("/get-players", async function(req, res) {
   try{
     const {gameID} = req.body;

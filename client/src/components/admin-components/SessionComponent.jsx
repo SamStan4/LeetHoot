@@ -1,57 +1,22 @@
 import { useState } from "react";
-import { useEffect } from "react";
 import PlayerComponent from "./PlayerComponent";
-
-function Clicked(gameID){
-    console.log("I have been clicked " + gameID)
-}
-
-
-/*
-curl -X POST http://localhost:8080/admin/public/get-players \
-  -H "Content-Type: application/json" \
-  -d '{"gameID": 1}'
-*/
-
-async function getPlayers(gameID){
-    try{
-        const res = await fetch("http://localhost:8080/admin/public/get-players",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    gameID: gameID
-                })
-            }
-        )
-
-        if (!res.ok) {
-            throw new Error(`HTTP error! Status`);
-        }
-
-        const data = await res.json();
-        return data.players;
-    }
-    catch (err){
-        console.error(err);
-        return null
-    }
-}
+import { deleteAPlayer, getPlayers } from "../../utility/api.js";
 
 export default function SessionComponent({onDelete, session}){
     const gameID = session.gameID;
     const [gamePlayers, setGamePlayers] = useState([]);
 
     async function handleClick(gameID) {
-        //debugger;
         const players = await getPlayers(gameID);
         setGamePlayers(players);
         console.log(gamePlayers)
     }
 
-    //plays = gamePlayers.map((player, index) => <PlayerComponent key={index} player={player.playerName}/>)
+    async function handler(playerName, gameID){
+        deleteAPlayer(playerName, gameID)
+        const players = await getPlayers(gameID);
+        setGamePlayers(players || []);
+    }
 
     return(
         <div>
@@ -64,7 +29,7 @@ export default function SessionComponent({onDelete, session}){
             </div>
             { 
                 gamePlayers.map((player, index) => (
-                    <PlayerComponent key={index} player={player} gameID={gameID} />
+                    <PlayerComponent key={index} onDelete={handler} player={player} gameID={gameID} />
                 ))}
         </div>
     )

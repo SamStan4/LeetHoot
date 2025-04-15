@@ -50,7 +50,17 @@ async function deleteSession(sessionID){
 }
 
 async function deletePlayer(playerName, gameID){
-
+  const sqlQuery = "DELETE FROM PlayerTable WHERE playerName = ? AND gameID = ?"
+  new Promise((resolve, reject) => {
+    db.run(sqlQuery, [playerName, gameID], function(err, status){
+      if(err){
+        reject(err)
+        return console.error(err.message);
+      }else{
+        resolve(status)
+      }
+    });
+  })
 }
 
 module.exports = {

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { hostLogin } from "@utility/api";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminLoginPage() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [errorText, setErrorText] = useState("");
-  {/** can you add the error text to the login? */}
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     const result = await hostLogin(userName, password);
@@ -13,7 +14,7 @@ export default function AdminLoginPage() {
       setErrorText("unable to login");
       return;
     }
-    // other logic i will write later
+    navigate("/admin/view");
   }
 
   return (

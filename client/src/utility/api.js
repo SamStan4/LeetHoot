@@ -149,9 +149,36 @@ export async function getProblemDetails(problemName) {
   }
 }
 
-// TODO: implement this
 export async function hostLogin(userName, password) {
-  return false;
+  if (!userName || !password) {
+    return false;
+  }
+  const url = `http://${serverIP}:${serverPort}/admin/public/login`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "username": userName,
+        "password": password
+      })
+    });
+    if (!response.ok) {
+      return false;
+    }
+    const data = await response.json();
+    const { result, token } = data;
+    if (!result) {
+      return false;
+    }
+    sessionStorage.setItem("adminToken", token);
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 
 // SECURE

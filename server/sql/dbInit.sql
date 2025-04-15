@@ -28,3 +28,8 @@ BEGIN
   SET hasAnswered = 0
   WHERE gameID = NEW.gameID;
 END;
+
+CREATE TABLE IF NOT EXISTS AdminTable (
+  username TEXT PRIMARY KEY,
+  passwordHash TEXT NOT NULL
+);

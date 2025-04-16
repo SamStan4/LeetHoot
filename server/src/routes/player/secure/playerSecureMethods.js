@@ -27,18 +27,26 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
 async function verifyPlayerAuthToken(jwtToken, gameID, playerName) {
   try {
     const decoded = jwt.verify(jwtToken, jwtSecret);
-    if (decoded.playerName !== playerName || decoded.gameID !== gameID || decoded.role !== "player") {
-      throw new Error("Player token does not match");
+
+    if (decoded.role !== "player") {
+      console.warn("Token role mismatch:", decoded.role);
+      return false;
     }
-    return {
-      valid: true,
-      payload: decoded
-    };
+
+    if (gameID && String(decoded.gameID) !== String(gameID)) {
+      console.warn(`Token gameID mismatch. Expected: ${gameID} Got: ${decoded.gameID}`);
+      return false;
+    }
+
+    if (playerName && decoded.playerName !== playerName) {
+      console.warn(`Token playerName mismatch. Expected: ${playerName} Got: ${decoded.playerName}`);
+      return false;
+    }
+
+    return decoded;
   } catch (err) {
-    return {
-      valid: false,
-      error: err.message
-    };
+    console.error("JWT verification failed:", err.message);
+    return false;
   }
 }
 

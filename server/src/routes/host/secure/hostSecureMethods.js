@@ -25,20 +25,14 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
 async function verifyHostAuthToken(jwtToken, gameID) {
   try {
     const decoded = jwt.verify(jwtToken, jwtSecret);
-
     if (decoded.role !== "host") {
-      console.warn("Token role mismatch:", decoded.role);
       return false;
     }
-
     if (gameID && String(decoded.gameID) !== String(gameID)) {
-      console.warn("Token gameID mismatch. Expected:", gameID, "Got:", decoded.gameID);
       return false;
     }
-
     return true;
   } catch (err) {
-    console.error("JWT verification failed:", err.message);
     return false;
   }
 }

@@ -12,37 +12,24 @@ module.exports = function (io) {
   const playerSecureRouter = express.Router();
 
   playerSecureRouter.use("*", async function (req, res, next) {
-    if (process.env.SKIP_AUTH === "true") {
-      return next();
+    if (process.env.SKIP_AUTH === "true") return next();
+  
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Missing or malformed Authorization header" });
     }
-    try {
-      const authHeader = req.headers.authorization;
-      const { playerName, gameID } = req.body;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({
-          error: "missing or malformed auth header"
-        });
-      } else if (!playerName || !gameID) {
-        return res.status(400).json({
-          error: "missing playerName or gameID"
-        });
-      }
-      const token = authHeader.split(" ")[1];
-      const result = await verifyPlayerAuthToken(token, gameID, playerName);
-      if (result.valid) {
-        req.user = result.payload;
-        next();
-      } else {
-        return res.status(401).json({
-          error: result.error
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: err.message
-      });
+  
+    const token = authHeader.split(" ")[1];
+    const gameID = req.body?.gameID || req.query?.gameID || req.params?.gameID;
+    const playerName = req.body?.playerName || req.query?.playerName || req.params?.playerName;
+    
+    const decoded = await verifyPlayerAuthToken(token, gameID, playerName);
+    if (!decoded) {
+      return res.status(403).json({ error: "Forbidden: Invalid player token or mismatched identity" });
     }
+  
+    req.player = decoded;
+    next();
   });
 
   playerSecureRouter.post("/get-current-problem", async function (req, res) {

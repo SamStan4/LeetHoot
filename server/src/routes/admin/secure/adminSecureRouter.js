@@ -5,8 +5,29 @@ const {
   getAllGames,
   getGamePlayers,
   deleteGame,
-  removePlayer
+  removePlayer,
+  verifyAdminAuthToken
 } = require ("./adminSecureMethods")
+
+adminSecureRouter.use("*", async function (req, res, next) {
+  if (process.env.SKIP_AUTH === "true") {
+    return next();
+  }
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or invalid Authorization header" });
+  }
+  const token = authHeader.split(" ")[1];
+
+  const isValid = verifyAdminAuthToken(token);
+
+  if (!isValid) {
+    return res.status(403).json({ error: "Forbidden: Invalid admin token" });
+  }
+
+  next();
+});
 
 adminSecureRouter.get("/games/all", async function (_, res) {
   try {

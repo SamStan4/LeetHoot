@@ -66,5 +66,5 @@ async function createAdminUser(userName, password) {
 module.exports = {
   createAdminUser,
   generateAdminAuthToken,
-  adminLogin
+  adminLogin,
 };

@@ -1,4 +1,13 @@
 const sqlite3 = require("sqlite3").verbose();
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+  console.error("unable to load jwt secret, exiting");
+  process.exit(1);
+}
 
 const db = new sqlite3.Database("./data/database.db", (err) => {
   if (err) {
@@ -8,6 +17,15 @@ const db = new sqlite3.Database("./data/database.db", (err) => {
     console.log("admin secure method module connected to database");
   }
 });
+
+function verifyAdminAuthToken(token) {
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    return decoded.role === "admin";
+  } catch (err) {
+    return false;
+  }
+}
 
 async function getAllGames() {
   const sqlString = "SELECT * FROM GameTable ORDER BY gameID ASC;";
@@ -69,5 +87,6 @@ module.exports = {
   getAllGames,
   getGamePlayers,
   deleteGame,
-  removePlayer
+  removePlayer,
+  verifyAdminAuthToken
 };

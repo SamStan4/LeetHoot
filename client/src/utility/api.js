@@ -531,7 +531,7 @@ export async function submitClientCode(playerCode, problemName, playerName, game
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        "authorization": `Bearer ${token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({

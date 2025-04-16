@@ -96,6 +96,7 @@ module.exports = function(io) {
     try {
       const { gameID } = req.params;
       const players = await getLeaderBoard(gameID);
+      console.log(players);
       return res.status(200).json({
         leaderBoard: players
       });

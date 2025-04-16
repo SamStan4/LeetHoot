@@ -4,7 +4,8 @@ const {
   verifyPlayerAuthToken,
   getCurrentQuestion,
   fetchGameState,
-  runCode
+  runCode,
+  submitCode
 } = require("./playerSecureMethods");
 
 module.exports = function (io) {
@@ -77,13 +78,29 @@ module.exports = function (io) {
     try {
       const { playerCode, problemName } = req.body;
       const result = await runCode(playerCode, problemName);
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({
+      console.error(err);
+      return res.status(500).json({
         error: err.message
       });
     }
-  })
+  });
+
+  playerSecureRouter.post("/submit-problem", async function (req, res) {
+    try {
+      const { playerName, playerCode, problemName, gameID } = req.body;
+      const result = await submitCode(playerCode, problemName, playerName, gameID);
+      return res.status(200).json({
+        status: result
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+  });
 
   playerSecureRouter.all("*", async function(req, res) {
     res.status(404).json({

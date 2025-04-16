@@ -478,3 +478,78 @@ export async function deletePlayerAdmin(gameID, playerID) {
     return false;
   }
 }
+
+export async function runClientCode(clientCode, problemName) {
+  const url = `http://${serverIP}:${serverPort}/player/secure/run-problem`;
+  const token = sessionStorage.getItem("playerToken");
+  if (!token) {
+    return {
+      ran: false
+    };
+  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "playerCode": clientCode,
+        "problemName": problemName
+      })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return {
+        ran: false
+      };
+    }
+    const data = await response.json();
+    return {
+      ran: true,
+      ...data
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      ran: false
+    };
+  }
+}
+
+export async function submitClientCode(playerCode, problemName, playerName, gameID) {
+  const url = `http://${serverIP}:${serverPort}/player/secure/submit-problem`;
+  const token = sessionStorage.getItem("playerToken");
+  if (!token) {
+    return {
+      ran: false
+    };
+  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "playerName": playerName,
+        "playerCode": playerCode,
+        "problemName": problemName,
+        "gameID": gameID
+      })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch game state:", errorData);
+      return false;
+    }
+    const data = await response.json();
+    return data.status;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}

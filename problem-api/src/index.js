@@ -56,6 +56,7 @@ const parseTestCaseIndexes = (testCaseIndexes, testCaseCount) => {
 let requestNumber = 0;
 
 app.post("/api/v1/problems/:id/run", async (req, res) => {
+    console.log(req.body)
     try {
         requestNumber = (requestNumber + 1) % 100000;
         const reqNum = requestNumber;

@@ -1,21 +1,18 @@
 const express = require('express');
-const hostRouter = express.Router();
 
-const hostPublicRouter = require("./public/hostPublicRouter");
-const hostSecureRouter = require("./secure/hostSecureRouter");
-
-//----------------------------------------------------------------------------------------------------------------------------------------------//
-
-hostRouter.use("/public", hostPublicRouter);
-hostRouter.use("/secure", hostSecureRouter);
+const hostPublicRouterFactory = require("./public/hostPublicRouter");
+const hostSecureRouterFactory = require("./secure/hostSecureRouter");
 
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
-hostRouter.all("*", async function (_, res) {
-  res.status(404).json({ error: "Not Found" });
-});
-  
-//----------------------------------------------------------------------------------------------------------------------------------------------//
+module.exports = function (io) {
+  const hostRouter = express.Router();
+  hostRouter.use("/public", hostPublicRouterFactory(io));
+  hostRouter.use("/secure", hostSecureRouterFactory(io));
 
+  hostRouter.all("*", async function (_, res) {
+    res.status(404).json({ error: "Not Found" });
+  });
 
-module.exports = hostRouter;
+  return hostRouter;
+};

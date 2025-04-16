@@ -1,0 +1,5 @@
+DROP TRIGGER IF EXISTS resetHasAnsweredOnGameStateChange;
+
+DROP TABLE IF EXISTS PlayerTable;
+DROP TABLE IF EXISTS GameTable;
+DROP TABLE IF EXISTS QuestionTable;

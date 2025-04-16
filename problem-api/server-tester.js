@@ -1,8 +1,9 @@
 const fs = require("fs");
+require("dotenv").config();
 
-const clientCode = fs.readFileSync("valid_parenthesis_solution.py").toString();
+const clientCode = fs.readFileSync("two_sum_solution.py").toString();
 
-fetch("http://localhost:7321/api/v1/problems/two-sum/run",
+fetch(`http://localhost:${process.env.PORT}/api/v1/problems/two-sum/run`,
     {
         method: "POST",
         headers: {
@@ -12,7 +13,7 @@ fetch("http://localhost:7321/api/v1/problems/two-sum/run",
             clientCode: clientCode,
             stopOnFail: true,
             language: 'python3',
-            testCaseIndexes: ''
+            testCaseIndexes: '0'
         })
     }
 ).then(response => {

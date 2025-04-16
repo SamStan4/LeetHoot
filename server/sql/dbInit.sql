@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE IF NOT EXISTS QuestionTable (
   questionName TEXT NOT NULL,
   questionDifficulty TEXT NOT NULL,
@@ -28,3 +30,8 @@ BEGIN
   SET hasAnswered = 0
   WHERE gameID = NEW.gameID;
 END;
+
+CREATE TABLE IF NOT EXISTS AdminTable (
+  username TEXT PRIMARY KEY,
+  passwordHash TEXT NOT NULL
+);

@@ -1,9 +1,9 @@
 import CodeEditorComponent from "@components/game-components/CodeEditorComponent";
 import ProblemDetailsComponent from "@components/game-components/ProblemDetailsComponent";
 import { useEffect, useState } from "react";
-import { getProblemDetails, getCurrentProblem } from "@utility/api";
+import { getProblemDetails, getCurrentProblemPlayer, runClientCode, submitClientCode } from "@utility/api";
 
-export default function CodeEditorPage({ gameID, playerName }) {
+export default function CodeEditorPage({ gameID, playerName, refreshTrigger, setCanSee }) {
   const [codeText, setCodeText] = useState("");
   const [mdContent, setMdContent] = useState("");
   const [terminalContent, setTerminalContent] = useState("");
@@ -11,11 +11,11 @@ export default function CodeEditorPage({ gameID, playerName }) {
 
   useEffect(() => {
     const getProblemName = async () => {
-      const name = await getCurrentProblem(gameID, playerName);
+      const name = await getCurrentProblemPlayer(gameID, playerName);
       setProblemName(name);
     };
     getProblemName();
-  }, []);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const setDetails = async () => {
@@ -25,20 +25,19 @@ export default function CodeEditorPage({ gameID, playerName }) {
       }
       setCodeText(problemDetails.solutionTemplate);
       setMdContent(problemDetails.description);
+      setTerminalContent("");
     };
     setDetails();
   }, [problemName]);
 
-  const handleSubmitCode = async () => {
-    // TODO: add a submit route in the backend
-    console.log("submitting code");
+  const handleSubmitCode = () => {
+    submitClientCode(codeText, problemName, playerName, gameID);
+    setCanSee(false);
   };
 
   const handleRunCode = async () => {
-    // TODO: add a run route in the backend
-    console.log("running code");
-    setTerminalContent("passed!");
-  }
+    const result = await runClientCode(codeText, problemName);
+    setTerminalContent(JSON.stringify(result, null, 2));  }
 
   return (
     <div className="w-full h-full flex justify-between">

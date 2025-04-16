@@ -14,6 +14,8 @@ import PlayGamePage from "@pages/PlayGamePage";
 import EnterPlayerNamePage from "@pages/EnterPlayerNamePage";
 import NotFoundPage from "@pages/NotFoundPage";
 import RunGamePage from "@pages/RunGamePage";
+import AdminLoginPage from "@pages/AdminLoginPage";
+import AdminViewPage from "@pages/AdminViewPage";
 /**
  * Navbar
  */
@@ -37,7 +39,9 @@ export default function App() {
             <Route path="/join-game" element={<JoinGamePage/>} />
             <Route path="/play-game/:game-id/:player-name" element={<PlayGamePage/>} />
             <Route path="/enter-player-name/:game-id" element={<EnterPlayerNamePage/>} />
-            <Route path="run-game/:game-id" element={<RunGamePage/>} />
+            <Route path="/run-game/:game-id" element={<RunGamePage/>} />
+            <Route path="/admin" element={<AdminLoginPage/>} />
+            <Route path="/admin/view" element={<AdminViewPage/>} />
             <Route path="*" element={<NotFoundPage/>} />
           </Routes>
         </div>

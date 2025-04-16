@@ -12,6 +12,7 @@ export default defineConfig({
       '@backgrounds' : path.resolve(__dirname, './src/backgrounds'),
       '@pages' : path.resolve(__dirname, './src/pages'),
       '@components' : path.resolve(__dirname, './src/components'),
+      '@const' : path.resolve(__dirname, './src/constants')
     },
   },
   server: {

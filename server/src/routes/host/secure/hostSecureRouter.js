@@ -16,34 +16,22 @@ module.exports = function(io) {
     if (process.env.SKIP_AUTH === "true") {
       return next();
     }
-    try {
-      const authHeader = req.headers.authorization;
-      const { gameID } = req.body;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({
-          error: "missing or malformed auth header"
-        });
-      } else if (!gameID) {
-        return res.status(400).json({
-          error: "missing gameID"
-        });
-      }
-      const token = authHeader.split(" ")[1];
-      const result = await verifyHostAuthToken(token, gameID);
-      if (result.valid) {
-        req.user = result.payload;
-        next();
-      } else {
-        return res.status(401).json({
-          error: result.error
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: err.message
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        error: "Missing or malformed Authorization header"
       });
     }
+    const token = authHeader.split(" ")[1];
+    const gameID = req.body?.gameID || req.query?.gameID || req.params?.gameID;
+
+    const isValid = await verifyHostAuthToken(token, gameID);
+    if (!isValid) {
+      return res.status(403).json({
+        error: "Forbidden: Invalid host token or mismatched gameID"
+      });
+    }
+    next();
   });
 
   hostSecureRouter.post("/get-current-problem", async function (req, res) {
